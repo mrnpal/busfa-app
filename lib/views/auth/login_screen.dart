@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../services/auth_service.dart';
 import '../admin/dashboard/admin_dashboard.dart';
 import '../user/user_home.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -72,35 +73,44 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF6DEC8),
+      backgroundColor: const Color.fromRGBO(246, 222, 200, 1.0),
       body: SafeArea(
         child: Column(
           children: [
-            // Top back arrow
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16,
+              ),
               child: Row(
-                children: [Icon(Icons.arrow_back_ios, color: Colors.white)],
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Color(0xff3E4E3E),
+                    ),
+                  ),
+                ],
               ),
             ),
-
-            // Header Text
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Go ahead and set up\nyour account',
-                  style: TextStyle(
+                  'Welcome back!\nSilahkan masuk untuk melanjutkan',
+                  style: GoogleFonts.robotoSlab(
                     fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromRGBO(0, 106, 103, 1),
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xff3E4E3E),
                   ),
                 ),
               ),
             ),
 
-            // Subtext
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               child: Align(
@@ -120,6 +130,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: Offset(0, -3),
+                    ),
+                  ],
                   borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
                 ),
                 child: Column(
@@ -176,13 +193,56 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(height: 24),
 
                             // Email
-                            TextField(
-                              controller: emailController,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.email_outlined),
-                                labelText: 'Email Address',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(
+                                      0.1,
+                                    ), // warna bayangan
+                                    spreadRadius: 1,
+                                    blurRadius: 8,
+                                    offset: const Offset(
+                                      0,
+                                      3,
+                                    ), // arah bayangan (horizontal, vertical)
+                                  ),
+                                ],
+                              ),
+                              child: TextField(
+                                controller: emailController,
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.email_outlined),
+                                  labelText: 'Email Address',
+                                  labelStyle: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                  floatingLabelStyle: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.white,
+
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -190,17 +250,60 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(height: 16),
 
                             // Password
-                            TextField(
-                              controller: passwordController,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.lock_outline),
-                                suffixIcon: const Icon(
-                                  Icons.visibility_outlined,
-                                ),
-                                labelText: 'Password',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(
+                                      0.1,
+                                    ), // warna bayangan
+                                    spreadRadius: 1,
+                                    blurRadius: 8,
+                                    offset: const Offset(
+                                      0,
+                                      3,
+                                    ), // arah bayangan (horizontal, vertical)
+                                  ),
+                                ],
+                              ),
+                              child: TextField(
+                                controller: passwordController,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.lock_outline),
+                                  suffixIcon: const Icon(
+                                    Icons.visibility_outlined,
+                                  ),
+                                  labelText: 'Password',
+                                  labelStyle: const TextStyle(
+                                    color: Colors.grey,
+                                  ), // saat belum floating
+                                  floatingLabelStyle: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.white,
+
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: const BorderSide(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -232,7 +335,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(height: 8),
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green[700],
+                                backgroundColor: Color.fromRGBO(
+                                  249,
+                                  212,
+                                  177,
+                                  1,
+                                ),
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 14,
                                 ),
@@ -246,7 +354,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               child: const Text(
                                 'Login',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
 
@@ -276,8 +388,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ],
                             ),
-
-                            const SizedBox(height: 24),
                           ],
                         ),
                       ),
