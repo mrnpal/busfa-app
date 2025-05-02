@@ -2,7 +2,8 @@ import 'package:alumni_busfa/views/admin/dashboard/admin_dashboard.dart';
 import 'package:alumni_busfa/views/user/user_home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'views/auth/login_screen.dart';
+// import 'views/auth/login_screen.dart';
+import 'package:alumni_busfa/views/welcome_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Busfa App',
       initialRoute: '/',
       routes: {
-        '/': (context) => LoginScreen(),
+        '/': (context) => WelcomePage(),
         '/admin-dashboard': (context) => AdminDashboard(),
         '/user-dashboard': (context) => UserHome(),
       },

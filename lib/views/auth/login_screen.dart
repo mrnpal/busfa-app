@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../services/auth_service.dart';
 import '../admin/dashboard/admin_dashboard.dart';
 import '../user/user_home.dart';
@@ -11,18 +12,48 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  String? error;
+  String error = '';
 
   void handleLogin() async {
     final authService = AuthService();
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: Text('Login Gagal'),
+              content: Text('Email dan password harus diisi.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+      );
+      return;
+    }
+
     final user = await authService.login(
       emailController.text,
       passwordController.text,
     );
+
     if (user == null) {
-      setState(() {
-        error = 'Login gagal. Coba lagi.';
-      });
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: Text('Login Gagal'),
+              content: Text('Email atau password salah. Silakan coba lagi.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('OK'),
+                ),
+              ],
+            ),
+      );
     } else {
       if (user.role == 'admin') {
         Navigator.pushReplacement(
@@ -41,93 +72,234 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey[50],
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Card(
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+      backgroundColor: const Color(0xffF6DEC8),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Top back arrow
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
+              child: Row(
+                children: [Icon(Icons.arrow_back_ios, color: Colors.white)],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
+            ),
+
+            // Header Text
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Go ahead and set up\nyour account',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(0, 106, 103, 1),
+                  ),
+                ),
+              ),
+            ),
+
+            // Subtext
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Sign in-up to enjoy the best managing experience',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // White area
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                ),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      "Selamat Datang",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueGrey[800],
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "Masuk untuk melanjutkan",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.blueGrey[600],
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    TextField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        labelText: "Email",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Login/Register Tabs
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: const Text(
+                                        'Login',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Register',
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // Email
+                            TextField(
+                              controller: emailController,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.email_outlined),
+                                labelText: 'Email Address',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // Password
+                            TextField(
+                              controller: passwordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.lock_outline),
+                                suffixIcon: const Icon(
+                                  Icons.visibility_outlined,
+                                ),
+                                labelText: 'Password',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                            ),
+
+                            // Remember Me & Forgot
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Checkbox(
+                                      value: false,
+                                      onChanged: (value) {},
+                                    ),
+                                    const Text('Remember me'),
+                                  ],
+                                ),
+                                TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    'Forgot Password?',
+                                    style: TextStyle(color: Colors.green[700]),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Login Button
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green[700],
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              onPressed: () {
+                                handleLogin();
+                              },
+
+                              child: const Text(
+                                'Login',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+                            const Divider(),
+                            const SizedBox(height: 8),
+                            const Center(
+                              child: Text(
+                                'Or login with',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Social buttons
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildSocialButton(
+                                  FontAwesomeIcons.google,
+                                  'Google',
+                                ),
+                                const SizedBox(width: 16),
+                                _buildSocialButton(
+                                  FontAwesomeIcons.facebookF,
+                                  'Facebook',
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 24),
+                          ],
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    TextField(
-                      controller: passwordController,
-                      decoration: InputDecoration(
-                        labelText: "Password",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      obscureText: true,
-                    ),
-                    if (error != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: Text(
-                          error!,
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: handleLogin,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Text("Login"),
-                    ),
-                    SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () {
-                        // Tambahkan logika untuk lupa password
-                      },
-                      child: Text(
-                        "Lupa Password?",
-                        style: TextStyle(color: Colors.blueGrey[600]),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
+          ],
         ),
+      ),
+    );
+  }
+
+  static Widget _buildSocialButton(IconData icon, String label) {
+    return OutlinedButton.icon(
+      onPressed: () {},
+      icon: FaIcon(icon, size: 18),
+      label: Text(label),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
