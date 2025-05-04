@@ -137,7 +137,7 @@ class AuthService {
   }
 
   // Login dengan Google
-  Future<void> signInWithGoogle() async {
+  Future<void> loginWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) return;

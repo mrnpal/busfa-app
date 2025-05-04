@@ -1,9 +1,11 @@
+// import 'package:alumni_busfa/views/auth/login_screen.dart';
+// import 'package:alumni_busfa/views/user/user_home.dart';
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:alumni_busfa/views/auth/login.dart';
-// import 'package:alumni_busfa/views/main_screens.dart';
+// // import 'package:alumni_busfa/views/auth/login.dart';
+// // import 'package:alumni_busfa/views/main_screens.dart';
 
 // class RegisterScreen extends StatefulWidget {
 //   const RegisterScreen({super.key});
@@ -15,6 +17,10 @@
 // class _RegisterScreenState extends State<RegisterScreen> {
 //   final TextEditingController emailController = TextEditingController();
 //   final TextEditingController passwordController = TextEditingController();
+//   final TextEditingController namaController = TextEditingController();
+//   final TextEditingController alamatController = TextEditingController();
+//   final TextEditingController angkatanController = TextEditingController();
+
 //   final FirebaseAuth _auth = FirebaseAuth.instance;
 
 //   bool _isObscured = true;
@@ -31,14 +37,18 @@
 //     String email = emailController.text.trim();
 //     String password = passwordController.text.trim();
 
-//     if (email.isEmpty || password.isEmpty) {
-//       Get.snackbar(
-//         "Error",
-//         "Email dan Password tidak boleh kosong",
-//         snackPosition: SnackPosition.BOTTOM,
-//         backgroundColor: Colors.red,
-//         colorText: Colors.white,
+//     if (email.isEmpty ||
+//         password.isEmpty ||
+//         namaController.text.isEmpty ||
+//         alamatController.text.isEmpty ||
+//         angkatanController.text.isEmpty) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: Text("Email dan Password tidak boleh kosong"),
+//           backgroundColor: Colors.red,
+//         ),
 //       );
+
 //       return;
 //     }
 
@@ -96,7 +106,7 @@
 //         backgroundColor: Colors.green,
 //         colorText: Colors.white,
 //       );
-//       Get.offAll(() => const MainScreens()); // Pindah ke login setelah berhasil
+//       Get.offAll(() => UserHome()); // Pindah ke login setelah berhasil
 //     } catch (e) {
 //       Get.snackbar(
 //         "Error",
@@ -134,6 +144,17 @@
 //                 ),
 //                 const SizedBox(height: 32),
 //                 TextField(
+//                   controller: namaController,
+//                   decoration: InputDecoration(
+//                     labelText: 'Nama',
+//                     border: OutlineInputBorder(
+//                       borderRadius: BorderRadius.circular(12),
+//                     ),
+//                     prefixIcon: const Icon(Icons.person),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 16),
+//                 TextField(
 //                   controller: emailController,
 //                   decoration: InputDecoration(
 //                     labelText: 'Email',
@@ -141,6 +162,28 @@
 //                       borderRadius: BorderRadius.circular(12),
 //                     ),
 //                     prefixIcon: const Icon(Icons.email),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 16),
+//                 TextField(
+//                   controller: alamatController,
+//                   decoration: InputDecoration(
+//                     labelText: 'alamat',
+//                     border: OutlineInputBorder(
+//                       borderRadius: BorderRadius.circular(12),
+//                     ),
+//                     prefixIcon: const Icon(Icons.location_city),
+//                   ),
+//                 ),
+//                 const SizedBox(height: 16),
+//                 TextField(
+//                   controller: angkatanController,
+//                   decoration: InputDecoration(
+//                     labelText: 'Tahun Angkatan',
+//                     border: OutlineInputBorder(
+//                       borderRadius: BorderRadius.circular(12),
+//                     ),
+//                     prefixIcon: const Icon(Icons.calendar_today),
 //                   ),
 //                 ),
 //                 const SizedBox(height: 16),
@@ -213,7 +256,12 @@
 //                     const Text('Sudah punya akun? '),
 //                     GestureDetector(
 //                       onTap: () {
-//                         Get.to(() => const LoginScreen());
+//                         Navigator.push(
+//                           context,
+//                           MaterialPageRoute(
+//                             builder: (context) => LoginScreen(),
+//                           ),
+//                         );
 //                       },
 //                       child: const Text(
 //                         'Login',

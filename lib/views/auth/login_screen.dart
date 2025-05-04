@@ -16,6 +16,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final registerEmailController = TextEditingController();
   final registerPasswordController = TextEditingController();
   final registerNameController = TextEditingController();
+  final registerAddressController = TextEditingController();
+  final registerPhoneController = TextEditingController();
+  final registerGraduationController = TextEditingController();
 
   bool isLogin = true; // Untuk toggle login/register
 
@@ -372,6 +375,20 @@ class _LoginScreenState extends State<LoginScreen> {
           registerEmailController,
           'Email Address',
           Icons.email_outlined,
+        ),
+        const SizedBox(height: 16),
+        _buildInputField(
+          registerAddressController,
+          'address',
+          Icons.location_city,
+          obscureText: true,
+        ),
+        const SizedBox(height: 16),
+        _buildInputField(
+          registerPhoneController,
+          'Phone Number',
+          Icons.phone,
+          obscureText: true,
         ),
         const SizedBox(height: 16),
         _buildInputField(

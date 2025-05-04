@@ -13,14 +13,14 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF6DEC8),
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Image.network(
-                "https://cdn.dribbble.com/userupload/34022841/file/original-07b777e02c236203e56930a3a58faf9f.gif",
+                "https://cdn.dribbble.com/userupload/33221640/file/original-36f27de426f6ac38e8333845ea88db46.gif",
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -51,7 +51,7 @@ class _WelcomePageState extends State<WelcomePage> {
             bottom: 32,
             right: 32,
             child: FloatingActionButton(
-              backgroundColor: const Color(0xFFFF8370),
+              backgroundColor: const Color.fromRGBO(6, 201, 254, 1.0),
               onPressed: () {
                 Navigator.push(
                   context,
