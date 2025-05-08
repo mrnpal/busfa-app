@@ -1,4 +1,5 @@
-import 'package:alumni_busfa/views/auth/login_screen.dart';
+import 'package:alumni_busfa/views/auth/login_page.dart';
+import 'package:alumni_busfa/views/auth/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -55,7 +56,7 @@ class _WelcomePageState extends State<WelcomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                  MaterialPageRoute(builder: (context) => LoginPage()),
                 );
               },
               child: const Icon(Icons.arrow_forward, color: Colors.white),
