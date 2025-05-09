@@ -9,14 +9,16 @@ Future<String?> registerAlumni({
   required String phone,
   required String job,
   required String graduationYear,
+  String? profilePictureUrl, // Tambahkan parameter ini
 }) async {
   try {
+    // Buat akun pengguna di Firebase Authentication
     UserCredential credential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
 
     String uid = credential.user!.uid;
 
-    // Simpan ke koleksi pendingAlumni
+    // Simpan data pengguna di Firestore
     await FirebaseFirestore.instance.collection('pendingAlumni').doc(uid).set({
       'name': name,
       'email': email,
@@ -24,10 +26,11 @@ Future<String?> registerAlumni({
       'phone': phone,
       'job': job,
       'graduationYear': graduationYear,
-      'isVerified': false,
+      'profilePictureUrl': profilePictureUrl, // Simpan URL gambar
+      'isVerified': false, // Status verifikasi
     });
 
-    // Logout langsung setelah daftar agar tidak bisa masuk sebelum verifikasi
+    // Logout pengguna setelah registrasi
     await FirebaseAuth.instance.signOut();
 
     return 'Pendaftaran berhasil. Tunggu verifikasi admin.';

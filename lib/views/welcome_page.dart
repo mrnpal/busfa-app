@@ -1,68 +1,130 @@
+import 'package:animate_do/animate_do.dart';
+import 'package:flutter/material.dart';
 import 'package:alumni_busfa/views/auth/login_page.dart';
 import 'package:alumni_busfa/views/auth/sign_up.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-class WelcomePage extends StatefulWidget {
-  const WelcomePage({super.key});
-
-  @override
-  State<WelcomePage> createState() => _WelcomePageState();
+void main() {
+  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: WelcomePage()));
 }
 
-class _WelcomePageState extends State<WelcomePage> {
+class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Image.network(
-                "https://cdn.dribbble.com/userupload/33221640/file/original-36f27de426f6ac38e8333845ea88db46.gif",
+      body: SafeArea(
+        child: Container(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1000),
+                    child: Text(
+                      "Welcome",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1200),
+                    child: Text(
+                      "Alumni Pondok Pesantren Bustanul Faizin, mari jalin silaturahmi dan berbagi informasi bersama.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey[700], fontSize: 15),
+                    ),
+                  ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Selamat Datang!",
-                      style: GoogleFonts.robotoSlab(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w600,
-                      ),
+              FadeInUp(
+                duration: Duration(milliseconds: 1400),
+                child: Container(
+                  height: MediaQuery.of(context).size.height / 3,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/Illustration.png'),
                     ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Alumni Pondok Pesantren Bustanul Faizin, mari jalin silaturahmi dan berbagi informasi bersama.',
-                      style: GoogleFonts.robotoSlab(
-                        fontSize: 16,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
+              ),
+              Column(
+                children: <Widget>[
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1500),
+                    child: MaterialButton(
+                      minWidth: double.infinity,
+                      height: 60,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      },
+                      shape: RoundedRectangleBorder(
+                        side: BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Text(
+                        "Login",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1600),
+                    child: Container(
+                      padding: EdgeInsets.only(top: 3, left: 3),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border(
+                          bottom: BorderSide(color: Colors.black),
+                          top: BorderSide(color: Colors.black),
+                          left: BorderSide(color: Colors.black),
+                          right: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                      child: MaterialButton(
+                        minWidth: double.infinity,
+                        height: 60,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RegisterPage(),
+                            ),
+                          );
+                        },
+                        color: Colors.yellow,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        child: Text(
+                          "Sign up",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          Positioned(
-            bottom: 32,
-            right: 32,
-            child: FloatingActionButton(
-              backgroundColor: const Color.fromRGBO(6, 201, 254, 1.0),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-              },
-              child: const Icon(Icons.arrow_forward, color: Colors.white),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
