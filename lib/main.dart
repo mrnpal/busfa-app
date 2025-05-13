@@ -1,3 +1,4 @@
+import 'package:alumni_busfa/views/user/map.dart';
 import 'package:alumni_busfa/views/user/user_home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash': (context) => SplashScreen(),
         '/': (context) => WelcomePage(),
+        '/map': (context) => MapSample(),
 
         '/user-dashboard': (context) => HomePage(),
       },
