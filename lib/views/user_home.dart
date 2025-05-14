@@ -269,9 +269,9 @@ class _HomePageState extends State<HomePage> {
         onTap: (index) {
           // Navigasi berdasarkan indeks
           if (index == 0) {
-            Navigator.pushNamed(context, '/home');
+            Navigator.pushNamed(context, '/user-dashboard');
           } else if (index == 1) {
-            Navigator.pushNamed(context, '/map');
+            Navigator.pushNamed(context, '/alumni-map');
           } else if (index == 2) {
             Navigator.pushNamed(context, '/profile');
           }

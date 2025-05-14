@@ -9,6 +9,8 @@ Future<String?> registerAlumni({
   required String phone,
   required String job,
   required String graduationYear,
+  required double latitude,
+  required double longitude,
   String? profilePictureUrl, // Tambahkan parameter ini
 }) async {
   try {
@@ -25,6 +27,7 @@ Future<String?> registerAlumni({
       'address': address,
       'phone': phone,
       'job': job,
+      'location': GeoPoint(latitude, longitude),
       'graduationYear': graduationYear,
       'profilePictureUrl': profilePictureUrl, // Simpan URL gambar
       'isVerified': false, // Status verifikasi

@@ -1,5 +1,8 @@
-import 'package:alumni_busfa/views/user/map.dart';
-import 'package:alumni_busfa/views/user/user_home.dart';
+import 'package:alumni_busfa/maps/alumni_map_page.dart';
+import 'package:alumni_busfa/maps/map.dart';
+import 'package:alumni_busfa/maps/map_circles.dart';
+import 'package:alumni_busfa/views/profil.dart';
+import 'package:alumni_busfa/views/user_home.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:alumni_busfa/views/splash.dart';
@@ -20,8 +23,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash': (context) => SplashScreen(),
         '/': (context) => WelcomePage(),
-        '/map': (context) => MapSample(),
-
+        '/map': (context) => MapPage(),
+        '/alumni-map': (context) => AlumniMapPage(),
+        '/profile': (context) => ProfileScreen(),
         '/user-dashboard': (context) => HomePage(),
       },
     );
