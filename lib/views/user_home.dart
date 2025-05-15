@@ -1,3 +1,4 @@
+import 'package:alumni_busfa/maps/map_with_custom_info_windows.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _currentIndex = 0;
   Future<String?> _getUserName() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -167,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                       // Card 3
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(context, '/feature3');
+                          Navigator.pushNamed(context, '/alumni-map');
                         },
                         child: Card(
                           elevation: 4,
@@ -260,23 +262,32 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+          BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Kegiatan'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Grup'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
-        currentIndex: 0, // Indeks tab yang aktif
+        currentIndex: _currentIndex,
         onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
           // Navigasi berdasarkan indeks
           if (index == 0) {
             Navigator.pushNamed(context, '/user-dashboard');
           } else if (index == 1) {
-            Navigator.pushNamed(context, '/alumni-map');
+            Navigator.pushNamed(context, '/activities');
           } else if (index == 2) {
+            Navigator.pushNamed(context, '/grup');
+          } else if (index == 3) {
             Navigator.pushNamed(context, '/profile');
           }
         },
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: MapWithCustomInfoWindows(),
     );
   }
 }

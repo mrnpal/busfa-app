@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Future<String?> registerAlumni({
+Future<String> registerAlumni({
   required String email,
   required String password,
   required String name,
@@ -11,36 +11,32 @@ Future<String?> registerAlumni({
   required String graduationYear,
   required double latitude,
   required double longitude,
-  String? profilePictureUrl, // Tambahkan parameter ini
+  String? photoUrl,
 }) async {
   try {
-    // Buat akun pengguna di Firebase Authentication
-    UserCredential credential = await FirebaseAuth.instance
+    final credential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
 
-    String uid = credential.user!.uid;
-
-    // Simpan data pengguna di Firestore
-    await FirebaseFirestore.instance.collection('pendingAlumni').doc(uid).set({
-      'name': name,
+    await FirebaseFirestore.instance.collection('pendingAlumni').add({
+      'uid': credential.user!.uid,
       'email': email,
+      'name': name,
       'address': address,
       'phone': phone,
       'job': job,
-      'location': GeoPoint(latitude, longitude),
       'graduationYear': graduationYear,
-      'profilePictureUrl': profilePictureUrl, // Simpan URL gambar
-      'isVerified': false, // Status verifikasi
+      'latitude': latitude,
+      'longitude': longitude,
+      'photoUrl': photoUrl,
+      'createdAt': Timestamp.now(),
+      'verified': false,
     });
-
-    // Logout pengguna setelah registrasi
-    await FirebaseAuth.instance.signOut();
 
     return 'Pendaftaran berhasil. Tunggu verifikasi admin.';
   } on FirebaseAuthException catch (e) {
-    return e.message;
+    return e.message ?? 'Terjadi kesalahan';
   } catch (e) {
-    return 'Terjadi kesalahan.';
+    return 'Gagal mendaftar: $e';
   }
 }
 
