@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<String> registerAlumni({
   required String email,
@@ -19,7 +18,7 @@ Future<String> registerAlumni({
         .createUserWithEmailAndPassword(email: email, password: password);
 
     final uid = credential.user!.uid;
-    String? fcmToken = await FirebaseMessaging.instance.getToken();
+
     await FirebaseFirestore.instance.collection('pendingAlumni').doc(uid).set({
       'uid': uid,
       'email': email,
@@ -31,7 +30,6 @@ Future<String> registerAlumni({
       'latitude': latitude,
       'longitude': longitude,
       'photoUrl': photoUrl,
-      'fcmToken': fcmToken,
     });
 
     return 'Pendaftaran berhasil. Tunggu verifikasi admin.';

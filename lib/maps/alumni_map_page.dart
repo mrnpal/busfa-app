@@ -117,6 +117,10 @@ class _AlumniMapPageState extends State<AlumniMapPage> {
 
   void _showAlumniDetail(Map<String, dynamic> data) {
     final photo = data['photoUrl'] ?? data['profilePictureUrl'];
+    final name = data['name'] ?? 'Tanpa Nama';
+    final job = data['job'] ?? '-';
+    final year = data['graduationYear']?.toString() ?? '-';
+    final phone = data['phone'] ?? '-';
 
     showModalBottomSheet(
       context: context,
@@ -129,31 +133,82 @@ class _AlumniMapPageState extends State<AlumniMapPage> {
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (photo != null)
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: NetworkImage(photo),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: 200, // batas tinggi maksimal modal
+              ),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center, // ubah dari start ke center
+                  mainAxisAlignment: MainAxisAlignment.center,   // tambahkan ini agar seluruh row di tengah
+                  children: [
+                    // Foto profil di kiri
+                    if (photo != null)
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundImage: NetworkImage(photo),
+                      )
+                    else
+                      const CircleAvatar(radius: 40, child: Icon(Icons.person)),
+                    const SizedBox(width: 16),
+                    // Tulisan di kanan foto
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center, // tambahkan ini agar tulisan di tengah vertikal
+                        children: [
+                          Text(
+                            name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            job,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.school,
+                                size: 16,
+                                color: Colors.grey.shade500,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Graduated $year',
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.phone,
+                                size: 16,
+                                color: Colors.grey.shade500,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                phone,
+                                style: TextStyle(color: Colors.grey.shade600),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  if (photo == null)
-                    const CircleAvatar(radius: 40, child: Icon(Icons.person)),
-                  const SizedBox(height: 10),
-                  Text(
-                    data['name'] ?? 'Tanpa Nama',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(data['phone'] ?? 'Tidak ada no telepon'),
-                  Text(data['job'] ?? ''),
-                  Text('Lulus: ${data['graduationYear'] ?? '-'}'),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
