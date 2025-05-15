@@ -1,0 +1,212 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+class AlumniMapPage extends StatefulWidget {
+  const AlumniMapPage({Key? key}) : super(key: key);
+
+  @override
+  _AlumniMapPageState createState() => _AlumniMapPageState();
+}
+
+class _AlumniMapPageState extends State<AlumniMapPage> {
+  late GoogleMapController _mapController;
+  final Set<Marker> _markers = {};
+  List<Map<String, dynamic>> _alumniList = [];
+  LatLng _initialPosition = const LatLng(-7.7501649, 113.7007051);
+
+  // Satu field pencarian
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAlumniLocations();
+  }
+
+  Future<void> _loadAlumniLocations() async {
+    final snapshot =
+        await FirebaseFirestore.instance.collection('alumniVerified').get();
+
+    Set<Marker> loadedMarkers = {};
+    List<Map<String, dynamic>> alumniList = [];
+
+    for (var doc in snapshot.docs) {
+      final data = doc.data();
+
+      double? lat;
+      double? lng;
+
+      if (data['latitude'] != null && data['longitude'] != null) {
+        lat = data['latitude'];
+        lng = data['longitude'];
+      } else if (data['location'] != null && data['location'] is GeoPoint) {
+        GeoPoint geo = data['location'];
+        lat = geo.latitude;
+        lng = geo.longitude;
+      }
+
+      if (lat != null && lng != null) {
+        alumniList.add({...data, 'lat': lat, 'lng': lng, 'docId': doc.id});
+        final marker = Marker(
+          markerId: MarkerId(doc.id),
+          position: LatLng(lat, lng),
+          onTap: () => _showAlumniDetail(data),
+        );
+        loadedMarkers.add(marker);
+      }
+    }
+
+    if (loadedMarkers.isNotEmpty) {
+      setState(() {
+        _alumniList = alumniList;
+        _markers.clear();
+        _markers.addAll(loadedMarkers);
+        _initialPosition = loadedMarkers.first.position;
+      });
+    }
+  }
+
+  void _filterMarkers() {
+    String query = _searchController.text.trim().toLowerCase();
+
+    final filtered =
+        _alumniList.where((alumni) {
+          final alumniName = (alumni['name'] ?? '').toString().toLowerCase();
+          final alumniYear = (alumni['graduationYear'] ?? '').toString();
+          return query.isEmpty ||
+              alumniName.contains(query) ||
+              alumniYear == query;
+        }).toList();
+
+    Set<Marker> filteredMarkers = {};
+    for (var alumni in filtered) {
+      filteredMarkers.add(
+        Marker(
+          markerId: MarkerId(alumni['docId']),
+          position: LatLng(alumni['lat'], alumni['lng']),
+          onTap: () => _showAlumniDetail(alumni),
+        ),
+      );
+    }
+
+    setState(() {
+      _markers
+        ..clear()
+        ..addAll(filteredMarkers);
+      if (filteredMarkers.isNotEmpty) {
+        _initialPosition = filteredMarkers.first.position;
+      }
+    });
+
+    // Jika hanya satu hasil, pindahkan kamera ke marker tersebut
+    if (filtered.length == 1) {
+      final alumni = filtered.first;
+      _mapController.animateCamera(
+        CameraUpdate.newLatLng(LatLng(alumni['lat'], alumni['lng'])),
+      );
+    }
+
+    // Jika tidak ada hasil, tampilkan info
+    if (filtered.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Alumni tidak ditemukan')));
+    }
+  }
+
+  void _showAlumniDetail(Map<String, dynamic> data) {
+    final photo = data['photoUrl'] ?? data['profilePictureUrl'];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder:
+          (_) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (photo != null)
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(photo),
+                    ),
+                  if (photo == null)
+                    const CircleAvatar(radius: 40, child: Icon(Icons.person)),
+                  const SizedBox(height: 10),
+                  Text(
+                    data['name'] ?? 'Tanpa Nama',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(data['phone'] ?? 'Tidak ada no telepon'),
+                  Text(data['job'] ?? ''),
+                  Text('Lulus: ${data['graduationYear'] ?? '-'}'),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Peta Lokasi Alumni')),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: const InputDecoration(
+                      labelText: 'Cari Nama atau Tahun Lulus',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _filterMarkers,
+                  child: const Text('Cari'),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    _filterMarkers();
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _initialPosition,
+                zoom: 14,
+              ),
+              markers: _markers,
+              onMapCreated: (controller) => _mapController = controller,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -282,12 +282,10 @@ class _HomePageState extends State<HomePage> {
           } else if (index == 2) {
             Navigator.pushNamed(context, '/grup');
           } else if (index == 3) {
-            Navigator.pushNamed(context, '/profile');
+            Navigator.pushNamed(context, '/alumni-map');
           }
         },
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: MapWithCustomInfoWindows(),
     );
   }
 }
