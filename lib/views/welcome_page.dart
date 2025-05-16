@@ -2,6 +2,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:alumni_busfa/views/auth/login_page.dart';
 import 'package:alumni_busfa/views/auth/sign_up.dart';
+import 'package:get/get.dart';
+import 'package:get/utils.dart';
 
 void main() {
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: WelcomePage()));
@@ -62,10 +64,7 @@ class WelcomePage extends StatelessWidget {
                       minWidth: double.infinity,
                       height: 60,
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
+                        Get.toNamed('/login');
                       },
                       shape: RoundedRectangleBorder(
                         side: BorderSide(color: Colors.black),
@@ -98,12 +97,7 @@ class WelcomePage extends StatelessWidget {
                         minWidth: double.infinity,
                         height: 60,
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => RegisterPage(),
-                            ),
-                          );
+                          Get.toNamed('/register');
                         },
                         color: Colors.yellow,
                         elevation: 0,

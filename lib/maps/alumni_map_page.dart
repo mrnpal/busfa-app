@@ -134,17 +134,14 @@ class _AlumniMapPageState extends State<AlumniMapPage> {
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
             child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: 200, // batas tinggi maksimal modal
-              ),
+              constraints: BoxConstraints(maxHeight: 200),
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center, // ubah dari start ke center
-                  mainAxisAlignment: MainAxisAlignment.center,   // tambahkan ini agar seluruh row di tengah
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Foto profil di kiri
                     if (photo != null)
                       CircleAvatar(
                         radius: 40,
@@ -153,11 +150,11 @@ class _AlumniMapPageState extends State<AlumniMapPage> {
                     else
                       const CircleAvatar(radius: 40, child: Icon(Icons.person)),
                     const SizedBox(width: 16),
-                    // Tulisan di kanan foto
+
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center, // tambahkan ini agar tulisan di tengah vertikal
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             name,

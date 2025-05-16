@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,6 +16,30 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
+  Timer? _autoScrollTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _autoScrollTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_pageController.hasClients) {
+        int nextPage = _pageController.page!.round() + 1;
+        if (nextPage > 2) nextPage = 0;
+        _pageController.animateToPage(
+          nextPage,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _autoScrollTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
 
   Future<String?> _getUserName() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -60,13 +88,15 @@ class _HomePageState extends State<HomePage> {
         String? photoUrl;
         if (snapshot.hasData && snapshot.data!.exists) {
           final data = snapshot.data!.data() as Map<String, dynamic>?;
-
           if (data != null) {
-            if (data.containsKey('profile-images') && data['profile-images'] != null) {
+            if (data.containsKey('profile-images') &&
+                data['profile-images'] != null) {
               photoUrl = data['profile-images'];
-            } else if (data.containsKey('photoUrl') && data['photoUrl'] != null) {
+            } else if (data.containsKey('photoUrl') &&
+                data['photoUrl'] != null) {
               photoUrl = data['photoUrl'];
-            } else if (data.containsKey('profilePictureUrl') && data['profilePictureUrl'] != null) {
+            } else if (data.containsKey('profilePictureUrl') &&
+                data['profilePictureUrl'] != null) {
               photoUrl = data['profilePictureUrl'];
             }
           }
@@ -74,20 +104,20 @@ class _HomePageState extends State<HomePage> {
 
         return GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/profile');
+            Get.toNamed('/profile');
           },
           child: Container(
             margin: const EdgeInsets.only(right: 16),
             child: CircleAvatar(
-              radius: 20,
+              radius: 24,
               backgroundColor: Colors.white,
               backgroundImage:
                   photoUrl != null
                       ? NetworkImage(photoUrl) as ImageProvider
-                      : const AssetImage('assets/home.png'),
+                      : const AssetImage('assets/images/profile-icon.png'),
               child:
                   photoUrl == null
-                      ? const Icon(Icons.person, color: Colors.blue)
+                      ? const Icon(Icons.person, color: Colors.transparent)
                       : null,
             ),
           ),
@@ -102,7 +132,6 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: const Color(0xFFF8FAFC),
       body: CustomScrollView(
         slivers: [
-          // App bar with user greeting
           SliverAppBar(
             expandedHeight: 180.0,
             floating: false,
@@ -111,11 +140,17 @@ class _HomePageState extends State<HomePage> {
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(35)),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFF0F4C81), Color(0xFF3A7BD5)],
+                    colors: [
+                      Color.fromRGBO(250, 231, 0, 1),
+                      Color.fromRGBO(254, 255, 167, 1),
+                    ],
                   ),
                 ),
                 padding: const EdgeInsets.only(left: 24, bottom: 16, top: 65),
@@ -128,13 +163,17 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Welcome back,",
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(color: Colors.white.withOpacity(0.8)),
+                          "Selamat datang,",
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleMedium?.copyWith(
+                            color: Colors.white.withOpacity(0.9),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          snapshot.data ?? "Alumni Member",
+                          "${snapshot.data ?? "Alumni Member"} 👋",
                           style: Theme.of(
                             context,
                           ).textTheme.headlineSmall?.copyWith(
@@ -151,97 +190,121 @@ class _HomePageState extends State<HomePage> {
             actions: [_buildProfileButton()],
           ),
 
-          // Main content
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Quick stats cards
                   SizedBox(
-                    height: 120,
-                    child: PageView(
-                      controller: _pageController,
+                    height: 140,
+                    child: Column(
                       children: [
-                        FutureBuilder<int>(
-                          future: _getAlumniCount(),
-                          builder: (context, snapshot) {
-                            return _buildStatCard(
-                              title: "Alumni Connections",
-                              value:
-                                  snapshot.hasData ? "${snapshot.data}" : "-",
-                              icon: Icons.people_alt_outlined,
-                              color: const Color(0xFF6366F1),
-                            );
-                          },
+                        Expanded(
+                          child: PageView(
+                            controller: _pageController,
+                            children: [
+                              FutureBuilder<int>(
+                                future: _getAlumniCount(),
+                                builder: (context, snapshot) {
+                                  return _buildStatCard(
+                                    title: "Total Alumni",
+                                    value:
+                                        snapshot.hasData
+                                            ? "${snapshot.data}"
+                                            : "-",
+                                    icon: Icons.people_alt_outlined,
+                                    color: const Color(0xFF6366F1),
+                                  );
+                                },
+                              ),
+                              FutureBuilder<int>(
+                                future: _getEventCount(),
+                                builder: (context, snapshot) {
+                                  return _buildStatCard(
+                                    title: "Total Kegiatan",
+                                    value:
+                                        snapshot.hasData
+                                            ? "${snapshot.data}"
+                                            : "-",
+                                    icon: Icons.event_outlined,
+                                    color: const Color(0xFF10B981),
+                                  );
+                                },
+                              ),
+                              FutureBuilder<int>(
+                                future: _getJobCount(),
+                                builder: (context, snapshot) {
+                                  return _buildStatCard(
+                                    title: "New Jobs",
+                                    value:
+                                        snapshot.hasData
+                                            ? "${snapshot.data}"
+                                            : "-",
+                                    icon: Icons.work_outline,
+                                    color: const Color(0xFFF59E0B),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        FutureBuilder<int>(
-                          future: _getEventCount(),
-                          builder: (context, snapshot) {
-                            return _buildStatCard(
-                              title: "Upcoming Events",
-                              value:
-                                  snapshot.hasData ? "${snapshot.data}" : "-",
-                              icon: Icons.event_outlined,
-                              color: const Color(0xFF10B981),
-                            );
-                          },
-                        ),
-                        FutureBuilder<int>(
-                          future: _getJobCount(),
-                          builder: (context, snapshot) {
-                            return _buildStatCard(
-                              title: "New Jobs",
-                              value:
-                                  snapshot.hasData ? "${snapshot.data}" : "-",
-                              icon: Icons.work_outline,
-                              color: const Color(0xFFF59E0B),
-                            );
-                          },
+                        const SizedBox(height: 8),
+                        Center(
+                          child: SmoothPageIndicator(
+                            controller: _pageController,
+                            count: 3,
+                            effect: WormEffect(
+                              dotHeight: 8,
+                              dotWidth: 8,
+                              activeDotColor: Theme.of(context).primaryColor,
+                              dotColor: Colors.grey.shade300,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
-                  // Features grid
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.6,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
+                  // Quick Access Section with tighter spacing
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildFeatureTile(
-                        icon: Icons.map_outlined,
-                        title: "Alumni Map",
-                        color: const Color(0xFF3B82F6),
-                        onTap:
-                            () => Navigator.pushNamed(context, '/alumni-map'),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 8),
+                        child: Text(
+                          "Quick Access",
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                        ),
                       ),
-                      _buildFeatureTile(
-                        icon: Icons.work_outline,
-                        title: "Job Board",
-                        color: const Color(0xFF10B981),
-                        onTap: () => Navigator.pushNamed(context, '/feature2'),
-                      ),
-                      _buildFeatureTile(
-                        icon: Icons.forum_outlined,
-                        title: "Discussion",
-                        color: const Color(0xFFF59E0B),
-                        onTap: () => Navigator.pushNamed(context, '/grup'),
-                      ),
-                      _buildFeatureTile(
-                        icon: Icons.school_outlined,
-                        title: "Mentorship",
-                        color: const Color(0xFF8B5CF6),
-                        onTap: () {},
+                      GridView.count(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisCount: 2,
+                        childAspectRatio: 1.6,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        padding: EdgeInsets.zero,
+                        children: [
+                          _buildFeatureTile(
+                            icon: Icons.map_outlined,
+                            title: "Alumni Map",
+                            color: const Color(0xFF3B82F6),
+                            onTap: () => Get.toNamed('/alumni-map'),
+                          ),
+                          _buildFeatureTile(
+                            icon: Icons.event_outlined,
+                            title: "Kegiatan",
+                            color: const Color(0xFFF59E0B),
+                            onTap: () => Get.toNamed('/activities'),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -372,13 +435,11 @@ class _HomePageState extends State<HomePage> {
           onTap: (index) {
             setState(() => _currentIndex = index);
             if (index == 0)
-              Navigator.pushNamed(context, '/user-dashboard');
+              Get.offAllNamed('/user-dashboard');
             else if (index == 1)
-              Navigator.pushNamed(context, '/activities');
+              Get.offAllNamed('/activities');
             else if (index == 2)
-              Navigator.pushNamed(context, '/grup');
-            else if (index == 3)
-              Navigator.pushNamed(context, '/alumni-map');
+              Get.toNamed('/profile');
           },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
@@ -421,23 +482,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               label: 'Events',
-            ),
-            BottomNavigationBarItem(
-              icon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                      _currentIndex == 2
-                          ? const Color(0xFF0F4C81).withOpacity(0.1)
-                          : Colors.transparent,
-                ),
-                child: Icon(
-                  _currentIndex == 2 ? Icons.chat : Icons.chat_outlined,
-                  size: 24,
-                ),
-              ),
-              label: 'Chat',
             ),
             BottomNavigationBarItem(
               icon: Container(

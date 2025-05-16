@@ -1,5 +1,8 @@
+import 'package:alumni_busfa/views/user_home.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/get_core.dart';
 import '/services/auth_service.dart';
 import 'sign_up.dart';
 
@@ -64,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
         });
       });
     } else {
-      Navigator.pushReplacementNamed(context, '/user-dashboard');
+      Get.offAllNamed('/user-dashboard');
     }
   }
 
@@ -182,12 +185,7 @@ class _LoginPageState extends State<LoginPage> {
                         Text("Belum punya akun? "),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RegisterPage(),
-                              ),
-                            );
+                            Get.toNamed('/register');
                           },
                           child: Text(
                             "Sign up",
