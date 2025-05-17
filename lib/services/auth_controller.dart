@@ -32,6 +32,8 @@
 //       String errorMsg = "Login gagal!";
 //       if (e.code == 'user-not-found') errorMsg = "Email tidak terdaftar.";
 //       if (e.code == 'wrong-password') errorMsg = "Password salah.";
+//       if (e.code == 'invalid-email') errorMsg = "Format email tidak valid.";
+//       if (e.code == 'user-disabled') errorMsg = "Akun ini telah dinonaktifkan.";
 
 //       Get.snackbar(
 //         "Error",

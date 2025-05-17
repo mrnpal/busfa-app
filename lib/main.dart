@@ -1,5 +1,7 @@
 import 'package:alumni_busfa/maps/alumni_map_page.dart';
+import 'package:alumni_busfa/views/activity_detail_page.dart';
 import 'package:alumni_busfa/views/activity_page.dart';
+import 'package:alumni_busfa/views/add_job_page.dart';
 import 'package:alumni_busfa/views/auth/login_page.dart';
 import 'package:alumni_busfa/views/auth/sign_up.dart';
 import 'package:alumni_busfa/views/job_page.dart';
@@ -33,6 +35,8 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/alumni-map', page: () => AlumniMapPage()),
         GetPage(name: '/activities', page: () => ActivityPage()),
         GetPage(name: '/job', page: () => JobPage()),
+        GetPage(name: '/add-job', page: () => AddJobPage()),
+        GetPage(name: '/activity-detail', page: () => ActivityDetailPage()),
       ],
     );
   }

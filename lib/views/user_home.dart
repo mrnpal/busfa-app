@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -73,6 +72,16 @@ class _HomePageState extends State<HomePage> {
     return snapshot.size;
   }
 
+  Future<List<Map<String, dynamic>>> _getRecentActivities() async {
+    final snapshot =
+        await FirebaseFirestore.instance
+            .collection('kegiatan')
+            .orderBy('date', descending: true)
+            .limit(3)
+            .get();
+    return snapshot.docs.map((doc) => doc.data()).toList();
+  }
+
   Widget _buildProfileButton() {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -95,9 +104,6 @@ class _HomePageState extends State<HomePage> {
             } else if (data.containsKey('photoUrl') &&
                 data['photoUrl'] != null) {
               photoUrl = data['photoUrl'];
-            } else if (data.containsKey('profilePictureUrl') &&
-                data['profilePictureUrl'] != null) {
-              photoUrl = data['profilePictureUrl'];
             }
           }
         }
@@ -167,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                           style: Theme.of(
                             context,
                           ).textTheme.titleMedium?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
+                            color: const Color.fromARGB(149, 80, 59, 242),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -177,7 +183,7 @@ class _HomePageState extends State<HomePage> {
                           style: Theme.of(
                             context,
                           ).textTheme.headlineSmall?.copyWith(
-                            color: Colors.white,
+                            color: const Color.fromARGB(184, 80, 59, 242),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -189,7 +195,6 @@ class _HomePageState extends State<HomePage> {
             ),
             actions: [_buildProfileButton()],
           ),
-
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -266,52 +271,204 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Quick Access Section with tighter spacing
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 4, bottom: 8),
-                        child: Text(
-                          "Quick Access",
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4, bottom: 8),
+                    child: Text(
+                      "Fitur Utama",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
                       ),
-                      GridView.count(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisCount: 2,
-                        childAspectRatio: 1.6,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        padding: EdgeInsets.zero,
-                        children: [
-                          _buildFeatureTile(
-                            icon: Icons.map_outlined,
-                            title: "Alumni Map",
-                            color: const Color(0xFF3B82F6),
-                            onTap: () => Get.toNamed('/alumni-map'),
-                          ),
-                          _buildFeatureTile(
-                            icon: Icons.event_outlined,
-                            title: "Kegiatan",
-                            color: const Color(0xFFF59E0B),
-                            onTap: () => Get.toNamed('/activities'),
-                          ),
-                        ],
+                    ),
+                  ),
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.6,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    padding: EdgeInsets.zero,
+                    children: [
+                      _buildFeatureTile(
+                        icon: Icons.map_outlined,
+                        title: "Alumni Map",
+                        color: const Color(0xFF3B82F6),
+                        onTap: () => Get.toNamed('/alumni-map'),
+                      ),
+                      // _buildFeatureTile(
+                      //   icon: Icons.event_outlined,
+                      //   title: "Kegiatan",
+                      //   color: const Color(0xFFF59E0B),
+                      //   onTap: () => Get.toNamed('/activities'),
+                      // ),
+                      _buildFeatureTile(
+                        icon: Icons.work_outline,
+                        title: "Lowongan Pekerjaan",
+                        color: const Color(0xFFF59E0B),
+                        onTap: () => Get.toNamed('/job'),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
+
+                  const Text(
+                    "Kegiatan Terkini",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 140,
+                    child: FutureBuilder<List<Map<String, dynamic>>>(
+                      future: _getRecentActivities(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return const Center(
+                            child: Text("Belum ada aktivitas terkini."),
+                          );
+                        }
+                        final activities = snapshot.data!;
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: activities.length,
+                          itemBuilder: (context, i) {
+                            final activity = activities[i];
+                            // Format tanggal
+                            String dateStr = '-';
+                            if (activity['date'] != null) {
+                              DateTime? date;
+                              if (activity['date'] is Timestamp) {
+                                date = (activity['date'] as Timestamp).toDate();
+                              } else if (activity['date'] is String) {
+                                date = DateTime.tryParse(activity['date']);
+                              }
+                              if (date != null) {
+                                dateStr =
+                                    "${date.day}-${date.month}-${date.year}";
+                              }
+                            }
+                            return Container(
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    width: 260,
+                                    margin: EdgeInsets.only(right: 16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue[50],
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.07),
+                                          blurRadius: 8,
+                                          offset: Offset(0, 3),
+                                        ),
+                                      ],
+                                      image:
+                                          activity['imageUrl'] != null &&
+                                                  activity['imageUrl'] != ""
+                                              ? DecorationImage(
+                                                image: NetworkImage(
+                                                  activity['imageUrl'],
+                                                ),
+                                                fit: BoxFit.cover,
+                                              )
+                                              : null,
+                                    ),
+                                  ),
+                                  // Gradient overlay
+                                  Container(
+                                    width: 260,
+                                    margin: EdgeInsets.only(right: 16),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.bottomCenter,
+                                        end: Alignment.topCenter,
+                                        colors: [
+                                          Colors.black.withOpacity(0.55),
+                                          Colors.transparent,
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  // Text content
+                                  Container(
+                                    width: 260,
+                                    margin: EdgeInsets.only(right: 16),
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          activity['title'] ?? '-',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color:
+                                                Colors
+                                                    .white, // <-- Putih agar kontras
+                                            shadows: [
+                                              Shadow(
+                                                blurRadius: 8,
+                                                color: Colors.black54,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const Spacer(),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.calendar_today,
+                                              size: 16,
+                                              color: Colors.white,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              dateStr,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w500,
+                                                shadows: [
+                                                  Shadow(
+                                                    blurRadius: 8,
+                                                    color: Colors.black54,
+                                                    offset: Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: _buildModernNavBar(),
+      bottomNavigationBar: _buildNavbar(),
     );
   }
 
@@ -416,7 +573,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildModernNavBar() {
+  Widget _buildNavbar() {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -481,7 +638,7 @@ class _HomePageState extends State<HomePage> {
                   size: 24,
                 ),
               ),
-              label: 'Events',
+              label: 'Kegiatan',
             ),
             BottomNavigationBarItem(
               icon: Container(
@@ -489,16 +646,16 @@ class _HomePageState extends State<HomePage> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color:
-                      _currentIndex == 3
+                      _currentIndex == 2
                           ? const Color(0xFF0F4C81).withOpacity(0.1)
                           : Colors.transparent,
                 ),
                 child: Icon(
-                  _currentIndex == 3 ? Icons.person : Icons.person_outlined,
+                  _currentIndex == 2 ? Icons.person : Icons.person_outlined,
                   size: 24,
                 ),
               ),
-              label: 'Profile',
+              label: 'Profil',
             ),
           ],
         ),

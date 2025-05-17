@@ -215,39 +215,10 @@ class _AlumniMapPageState extends State<AlumniMapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Peta Lokasi Alumni')),
-      body: Column(
+      body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      labelText: 'Cari Nama atau Tahun Lulus',
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _filterMarkers,
-                  child: const Text('Cari'),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    _filterMarkers();
-                  },
-                ),
-              ],
-            ),
-          ),
-          Expanded(
+          // Google Map
+          Positioned.fill(
             child: GoogleMap(
               initialCameraPosition: CameraPosition(
                 target: _initialPosition,
@@ -255,6 +226,49 @@ class _AlumniMapPageState extends State<AlumniMapPage> {
               ),
               markers: _markers,
               onMapCreated: (controller) => _mapController = controller,
+            ),
+          ),
+          //Pencarian
+          Positioned(
+            top: 70,
+            left: 16,
+            right: 16,
+            child: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(12),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (val) => _filterMarkers(),
+                onSubmitted: (val) => _filterMarkers(),
+                decoration: InputDecoration(
+                  hintText: 'Cari nama atau tahun lulus',
+                  prefixIcon: const Icon(Icons.search, color: Colors.blueGrey),
+                  suffixIcon:
+                      _searchController.text.isNotEmpty
+                          ? IconButton(
+                            icon: const Icon(
+                              Icons.clear,
+                              color: Colors.blueGrey,
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                              _filterMarkers();
+                            },
+                          )
+                          : null,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 0,
+                    horizontal: 0,
+                  ),
+                ),
+                textInputAction: TextInputAction.search,
+              ),
             ),
           ),
         ],

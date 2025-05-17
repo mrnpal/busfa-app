@@ -1,10 +1,8 @@
-import 'package:alumni_busfa/views/user_home.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/get_core.dart';
 import '/services/auth_service.dart';
-import 'sign_up.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -42,21 +40,31 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       // Snackbar error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.redAccent,
-          behavior: SnackBarBehavior.floating,
-          content: Row(
-            children: [
-              Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(result, style: TextStyle(color: Colors.white)),
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              backgroundColor: Colors.red[50],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-            ],
-          ),
-          duration: Duration(seconds: 3),
-        ),
+              title: Row(
+                children: [
+                  SizedBox(width: 8),
+                  Text(
+                    "Login Gagal",
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
+                ],
+              ),
+              content: Text(result, style: TextStyle(color: Colors.black87)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text("Tutup"),
+                ),
+              ],
+            ),
       );
 
       // Reset animasi agar bisa dipicu ulang

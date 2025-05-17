@@ -1,7 +1,5 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:alumni_busfa/views/auth/login_page.dart';
-import 'package:alumni_busfa/views/auth/sign_up.dart';
 import 'package:get/get.dart';
 import 'package:get/utils.dart';
 

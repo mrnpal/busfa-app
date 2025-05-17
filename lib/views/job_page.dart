@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/route_manager.dart';
 import 'package:intl/intl.dart';
 
 class JobPage extends StatefulWidget {
@@ -293,7 +294,7 @@ class _JobPageState extends State<JobPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to job posting page
+          Get.toNamed('/add-job');
         },
         backgroundColor: Colors.blue,
         child: const Icon(Icons.add, color: Colors.white),

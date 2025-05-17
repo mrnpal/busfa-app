@@ -47,7 +47,7 @@ Future<String?> loginAlumni(String email, String password) async {
 
     String uid = credential.user!.uid;
 
-    // Cek apakah user sudah diverifikasi di koleksi alumni
+    // mengecek apakah alumni sudah diverifikasi oleh admin
     final doc =
         await FirebaseFirestore.instance
             .collection('alumniVerified')
@@ -59,10 +59,14 @@ Future<String?> loginAlumni(String email, String password) async {
       return 'Akun belum diverifikasi oleh admin.';
     }
 
-    return null; // login berhasil
+    return null;
   } on FirebaseAuthException catch (e) {
-    return e.message;
-  } catch (e) {
-    return 'Login gagal.';
+    String errorMsg = "Login gagal!";
+    if (e.code == 'user-not-found') {
+      errorMsg = "Email tidak terdaftar.";
+    } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
+      errorMsg = "Password salah.";
+    }
+    return errorMsg;
   }
 }

@@ -38,13 +38,152 @@ class _ActivityPageState extends State<ActivityPage> {
     });
   }
 
+  void _showActivityDetailPopup(BuildContext context, Activity activity) {
+    final dateTimeString = "${activity.date} ${activity.time}";
+    final eventDate = DateTime.parse(dateTimeString);
+    final formattedDate = DateFormat('dd MMM yyyy').format(eventDate);
+    final formattedTime = DateFormat('HH:mm').format(eventDate);
+
+    Get.dialog(
+      Dialog(
+        insetPadding: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
+                children: [
+                  if (activity.imageUrl != null &&
+                      activity.imageUrl!.isNotEmpty)
+                    ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                      child: Image.network(
+                        activity.imageUrl!,
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) => Container(
+                              height: 200,
+                              color: Colors.grey[200],
+                              child: const Icon(
+                                Icons.image_not_supported,
+                                color: Colors.grey,
+                              ),
+                            ),
+                      ),
+                    ),
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Get.back(),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          formattedDate,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          formattedTime,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      activity.title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      activity.description,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[700],
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 20,
+                          color: Colors.grey[600],
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            activity.location,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(activity).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        _getStatusText(activity),
+                        style: TextStyle(
+                          color: _getStatusColor(activity),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text(
-          "Kegiatan Alumni",
+          "Kegiatan",
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
         centerTitle: true,
@@ -148,7 +287,7 @@ class _ActivityPageState extends State<ActivityPage> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
                     onTap: () {
-                      // Navigate to activity detail
+                      _showActivityDetailPopup(context, activity);
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -319,7 +458,7 @@ class _ActivityPageState extends State<ActivityPage> {
           },
         ),
       ),
-      bottomNavigationBar: _buildModernNavBar(),
+      bottomNavigationBar: _buildNavbar(),
     );
   }
 
@@ -345,7 +484,7 @@ class _ActivityPageState extends State<ActivityPage> {
     return "Akan Datang";
   }
 
-  Widget _buildModernNavBar() {
+  Widget _buildNavbar() {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -410,9 +549,8 @@ class _ActivityPageState extends State<ActivityPage> {
                   size: 24,
                 ),
               ),
-              label: 'Events',
+              label: 'Kegiatan',
             ),
-
             BottomNavigationBarItem(
               icon: Container(
                 padding: const EdgeInsets.all(6),
@@ -428,7 +566,7 @@ class _ActivityPageState extends State<ActivityPage> {
                   size: 24,
                 ),
               ),
-              label: 'Profile',
+              label: 'Profil',
             ),
           ],
         ),
