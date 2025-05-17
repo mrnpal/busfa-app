@@ -1,6 +1,8 @@
-import 'dart:async';
+import 'package:alumni_busfa/views/user_home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:alumni_busfa/views/welcome_page.dart';
+import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -11,13 +13,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Navigasi ke halaman utama setelah 3 detik
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => WelcomePage()),
-      );
-    });
+    _checkLoginStatus();
+  }
+
+  void _checkLoginStatus() async {
+    await Future.delayed(const Duration(seconds: 2));
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      Get.offAll(() => HomePage());
+    } else {
+      Get.offAll(() => WelcomePage());
+    }
   }
 
   @override

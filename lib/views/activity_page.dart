@@ -188,14 +188,6 @@ class _ActivityPageState extends State<ActivityPage> {
         ),
         centerTitle: true,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // Implement search functionality
-            },
-          ),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: _refreshActivities,

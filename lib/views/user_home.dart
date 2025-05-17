@@ -293,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                       _buildFeatureTile(
                         icon: Icons.map_outlined,
                         title: "Alumni Map",
-                        color: const Color(0xFF3B82F6),
+                        color: const Color(0xFF10B981),
                         onTap: () => Get.toNamed('/alumni-map'),
                       ),
                       // _buildFeatureTile(

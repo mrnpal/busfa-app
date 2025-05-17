@@ -18,15 +18,15 @@
 //     _checkLoginStatus();
 //   }
 
-//   void _checkLoginStatus() async {
-//     await Future.delayed(Duration(seconds: 2));
-//     final user = FirebaseAuth.instance.currentUser;
-//     if (user != null) {
-//       Get.offAll(() => const MainScreens());
-//     } else {
-//       Get.offAll(() => const LoginScreen());
-//     }
-//   }
+  // void _checkLoginStatus() async {
+  //   await Future.delayed(Duration(seconds: 2));
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   if (user != null) {
+  //     Get.offAll(() => const MainScreens());
+  //   } else {
+  //     Get.offAll(() => const LoginScreen());
+  //   }
+  // }
 
 //   @override
 //   Widget build(BuildContext context) {
