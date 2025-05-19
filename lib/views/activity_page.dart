@@ -497,9 +497,9 @@ class _ActivityPageState extends State<ActivityPage> {
             if (index == 0)
               Get.offAllNamed('/user-dashboard');
             else if (index == 1)
-              Get.toNamed('/activities');
+              Get.offAllNamed('/activities');
             else if (index == 2)
-              Get.toNamed('/profile');
+              Get.offAllNamed('/profile');
           },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,

@@ -21,7 +21,7 @@ class _JobPageState extends State<JobPage> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text(
-          'Job Opportunities',
+          'Lowongan Pekerjaan',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
@@ -61,7 +61,7 @@ class _JobPageState extends State<JobPage> {
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Search jobs...',
+                  hintText: 'Cari Pekerjaan...',
                   prefixIcon: const Icon(Icons.search),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -116,7 +116,7 @@ class _JobPageState extends State<JobPage> {
                         ),
                         const SizedBox(height: 16),
                         const Text(
-                          'No job postings available',
+                          'Tidak ada lowongan pekerjaan saat ini',
                           style: TextStyle(fontSize: 16),
                         ),
                       ],
@@ -325,7 +325,7 @@ class _JobPageState extends State<JobPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          title: const Text('Filter Jobs'),
+          title: const Text('Filter Pekerjaan'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -464,7 +464,7 @@ class _JobPageState extends State<JobPage> {
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  'Job Description',
+                  'Deskripsi Pekerjaan',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
@@ -478,7 +478,7 @@ class _JobPageState extends State<JobPage> {
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  'Requirements',
+                  'Persyaratan',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
@@ -522,7 +522,7 @@ class _JobPageState extends State<JobPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Posted Date',
+                            'Tanggal Diposting',
                             style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                           Text(
@@ -537,7 +537,7 @@ class _JobPageState extends State<JobPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Application Deadline',
+                            'Batas Waktu Pendaftaran',
                             style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
                           Text(
@@ -560,6 +560,7 @@ class _JobPageState extends State<JobPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -568,7 +569,10 @@ class _JobPageState extends State<JobPage> {
                     onPressed: () {
                       // Apply for job
                     },
-                    child: const Text('Apply Now'),
+                    child: const Text(
+                      'Lamar Pekerjaan',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),

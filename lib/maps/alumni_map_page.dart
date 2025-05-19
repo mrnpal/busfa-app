@@ -1,6 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AlumniMapPage extends StatefulWidget {
   const AlumniMapPage({Key? key}) : super(key: key);
@@ -48,12 +52,24 @@ class _AlumniMapPageState extends State<AlumniMapPage> {
 
       if (lat != null && lng != null) {
         alumniList.add({...data, 'lat': lat, 'lng': lng, 'docId': doc.id});
-        final marker = Marker(
-          markerId: MarkerId(doc.id),
-          position: LatLng(lat, lng),
-          onTap: () => _showAlumniDetail(data),
-        );
-        loadedMarkers.add(marker);
+        final photoUrl = data['photoUrl'] ?? data['profilePictureUrl'];
+
+        Future<BitmapDescriptor> markerIcon =
+            (photoUrl != null && photoUrl != "")
+                ? _getMarkerFromUrl(photoUrl)
+                : _getDefaultMarkerAsset();
+
+        markerIcon.then((icon) {
+          final marker = Marker(
+            markerId: MarkerId(doc.id),
+            position: LatLng(lat!, lng!),
+            icon: icon,
+            onTap: () => _showAlumniDetail(data),
+          );
+          setState(() {
+            _markers.add(marker);
+          });
+        });
       }
     }
 
@@ -65,6 +81,65 @@ class _AlumniMapPageState extends State<AlumniMapPage> {
         _initialPosition = loadedMarkers.first.position;
       });
     }
+  }
+
+  Future<BitmapDescriptor> _getMarkerFromUrl(String url) async {
+    try {
+      final http.Response response = await http.get(Uri.parse(url));
+      final Uint8List bytes = response.bodyBytes;
+      final ui.Codec codec = await ui.instantiateImageCodec(
+        bytes,
+        targetWidth: 100,
+        targetHeight: 100,
+      );
+      final ui.FrameInfo fi = await codec.getNextFrame();
+      final ui.Image image = fi.image;
+
+      // Buat gambar bulat
+      final ui.PictureRecorder recorder = ui.PictureRecorder();
+      final Canvas canvas = Canvas(recorder);
+      final double size = 100;
+      final Paint paint = Paint();
+      final Rect rect = Rect.fromLTWH(0, 0, size, size);
+
+      // Clip lingkaran
+      canvas.drawCircle(
+        Offset(size / 2, size / 2),
+        size / 2,
+        Paint()..color = Colors.transparent,
+      );
+      canvas.clipPath(Path()..addOval(rect));
+      canvas.drawImage(image, Offset.zero, paint);
+
+      final ui.Image circularImage = await recorder.endRecording().toImage(
+        100,
+        100,
+      );
+      final ByteData? byteData = await circularImage.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+
+      return BitmapDescriptor.fromBytes(byteData!.buffer.asUint8List());
+    } catch (e) {
+      // Jika gagal, fallback ke marker default
+      return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure);
+    }
+  }
+
+  Future<BitmapDescriptor> _getDefaultMarkerAsset() async {
+    final ByteData byteData = await rootBundle.load(
+      'assets/images/profile-icon.png',
+    );
+    final Uint8List bytes = byteData.buffer.asUint8List();
+    final ui.Codec codec = await ui.instantiateImageCodec(
+      bytes,
+      targetWidth: 85,
+    );
+    final ui.FrameInfo fi = await codec.getNextFrame();
+    final ByteData? resized = await fi.image.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
+    return BitmapDescriptor.fromBytes(resized!.buffer.asUint8List());
   }
 
   void _filterMarkers() {

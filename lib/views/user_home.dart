@@ -147,16 +147,13 @@ class _HomePageState extends State<HomePage> {
               background: Container(
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
                   ),
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      Color.fromRGBO(250, 231, 0, 1),
-                      Color.fromRGBO(254, 255, 167, 1),
-                    ],
+                    colors: [Color(0xFF0F4C81), Color(0xFF3A7BD5)],
                   ),
                 ),
                 padding: const EdgeInsets.only(left: 24, bottom: 16, top: 65),
@@ -173,7 +170,7 @@ class _HomePageState extends State<HomePage> {
                           style: Theme.of(
                             context,
                           ).textTheme.titleMedium?.copyWith(
-                            color: const Color.fromARGB(149, 80, 59, 242),
+                            color: Colors.white.withOpacity(0.8),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -183,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                           style: Theme.of(
                             context,
                           ).textTheme.headlineSmall?.copyWith(
-                            color: const Color.fromARGB(184, 80, 59, 242),
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -596,7 +593,7 @@ class _HomePageState extends State<HomePage> {
             else if (index == 1)
               Get.offAllNamed('/activities');
             else if (index == 2)
-              Get.toNamed('/profile');
+              Get.offAllNamed('/profile');
           },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
