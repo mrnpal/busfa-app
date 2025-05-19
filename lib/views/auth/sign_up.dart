@@ -6,9 +6,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:get/get.dart';
 import '/services/auth_service.dart';
 import 'login_page.dart';
-import 'package:animate_do/animate_do.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -30,6 +31,8 @@ class _RegisterPageState extends State<RegisterPage> {
   bool isLoading = false;
   bool _obscurePassword = true;
   String? message;
+  bool showErrorAnimation = false;
+  bool showErrorIcon = false;
 
   LatLng? selectedLocation;
   File? _selectedImage;
@@ -70,8 +73,29 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> _register() async {
-    if (_formKey.currentState!.validate() && selectedLocation != null) {
-      setState(() => isLoading = true);
+    if (_formKey.currentState!.validate()) {
+      if (selectedLocation == null) {
+        setState(() {
+          message = 'Silakan pilih lokasi di peta';
+          showErrorAnimation = true;
+          showErrorIcon = true;
+        });
+
+        // Reset animasi setelah beberapa detik
+        Future.delayed(const Duration(seconds: 2), () {
+          setState(() {
+            showErrorAnimation = false;
+            showErrorIcon = false;
+          });
+        });
+        return;
+      }
+
+      setState(() {
+        isLoading = true;
+        showErrorAnimation = false;
+        showErrorIcon = false;
+      });
 
       final photoUrl = await _uploadImageToStorage();
 
@@ -91,6 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
       setState(() => isLoading = false);
 
       if (result == 'Pendaftaran berhasil. Tunggu verifikasi admin.') {
+        // Clear form
         emailController.clear();
         passwordController.clear();
         nameController.clear();
@@ -101,25 +126,87 @@ class _RegisterPageState extends State<RegisterPage> {
         selectedLocation = null;
         _selectedImage = null;
 
-        ScaffoldMessenger.of(this.context).showSnackBar(
-          SnackBar(
-            content: const Text("Registrasi berhasil, tunggu verifikasi admin"),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-
-        Navigator.pushReplacement(
-          this.context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+        // Show success dialog
+        showDialog(
+          context: this.context,
+          builder:
+              (context) => AlertDialog(
+                backgroundColor: Colors.green[50],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                title: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.green),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Registrasi Berhasil",
+                      style: TextStyle(color: Colors.green[700]),
+                    ),
+                  ],
+                ),
+                content: Text(
+                  result,
+                  style: const TextStyle(color: Colors.black87),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Get.offAll(() => const LoginPage());
+                    },
+                    child: const Text("OK"),
+                  ),
+                ],
+              ),
         );
       } else {
-        setState(() => message = result);
+        setState(() {
+          message = result;
+          showErrorAnimation = true;
+          showErrorIcon = true;
+        });
+
+        // Show error dialog
+        showDialog(
+          context: this.context,
+          builder:
+              (context) => AlertDialog(
+                backgroundColor: Colors.red[50],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                title: Row(
+                  children: [
+                    const Icon(Icons.error_outline, color: Colors.red),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Registrasi Gagal",
+                      style: TextStyle(color: Colors.red[700]),
+                    ),
+                  ],
+                ),
+                content: Text(
+                  result,
+                  style: const TextStyle(color: Colors.black87),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text("Tutup"),
+                  ),
+                ],
+              ),
+        );
+
+        // Reset animasi setelah beberapa detik
+        Future.delayed(const Duration(seconds: 2), () {
+          setState(() {
+            showErrorAnimation = false;
+            showErrorIcon = false;
+          });
+        });
       }
-    } else if (selectedLocation == null) {
-      setState(() => message = 'Silakan pilih lokasi di peta');
     }
   }
 
@@ -129,337 +216,366 @@ class _RegisterPageState extends State<RegisterPage> {
     final isDarkMode = theme.brightness == Brightness.dark;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Daftar Alumni"),
         elevation: 0,
+        backgroundColor: Colors.white,
+
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: FadeInDown(
-          duration: const Duration(milliseconds: 700),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Profile Picture Section
-                FadeInDown(
-                  duration: const Duration(milliseconds: 500),
-                  child: Center(
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: theme.colorScheme.primary.withOpacity(0.5),
-                              width: 2,
-                            ),
-                          ),
-                          child: ClipOval(
-                            child: _selectedImage != null
-                                ? Image.file(_selectedImage!, fit: BoxFit.cover)
-                                : Container(
-                                    color: Colors.grey.shade200,
-                                    child: Icon(
-                                      Icons.person,
-                                      size: 60,
-                                      color: Colors.grey.shade500,
-                                    ),
-                                  ),
-                          ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    const SizedBox(height: 20),
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1000),
+                      child: const Text(
+                        "Buat Akun Baru",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
                         ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: _pickImage,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1200),
+                      child: Text(
+                        "Isi formulir untuk mendaftar",
+                        style: TextStyle(fontSize: 15, color: Colors.grey[700]),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+
+                    // Profile Picture
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1300),
+                      child: Center(
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 120,
+                              height: 120,
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primary,
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: isDarkMode
-                                      ? Colors.grey.shade800
-                                      : Colors.white,
+                                  color: theme.colorScheme.primary.withOpacity(
+                                    0.5,
+                                  ),
                                   width: 2,
                                 ),
                               ),
-                              child: Icon(
-                                Icons.camera_alt,
-                                size: 20,
-                                color: Colors.white,
+                              child: ClipOval(
+                                child:
+                                    _selectedImage != null
+                                        ? Image.file(
+                                          _selectedImage!,
+                                          fit: BoxFit.cover,
+                                        )
+                                        : Container(
+                                          color: Colors.grey.shade200,
+                                          child: Icon(
+                                            Icons.person,
+                                            size: 60,
+                                            color: Colors.grey.shade500,
+                                          ),
+                                        ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: _pickImage,
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primary,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color:
+                                          isDarkMode
+                                              ? Colors.grey.shade800
+                                              : Colors.white,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    // Name Field
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1400),
+                      child: _buildTextField(
+                        controller: nameController,
+                        label: 'Nama Lengkap',
+                        icon: Icons.person_outline,
+                        validator:
+                            (val) =>
+                                val == null || val.trim().isEmpty
+                                    ? 'Wajib diisi'
+                                    : null,
+                      ),
+                    ),
+
+                    // Email Field
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1500),
+                      child: _buildTextField(
+                        controller: emailController,
+                        label: 'Email',
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty)
+                            return 'Wajib diisi';
+                          if (!RegExp(
+                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          ).hasMatch(val)) {
+                            return 'Email tidak valid';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+
+                    // Password Field
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1600),
+                      child: _buildTextField(
+                        controller: passwordController,
+                        label: 'Password',
+                        icon: Icons.lock_outline,
+                        obscureText: _obscurePassword,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty)
+                            return 'Wajib diisi';
+                          if (val.length < 6) return 'Minimal 6 karakter';
+                          return null;
+                        },
+                      ),
+                    ),
+
+                    // Phone Field
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1700),
+                      child: _buildTextField(
+                        controller: phoneController,
+                        label: 'Nomor HP',
+                        icon: Icons.phone_outlined,
+                        keyboardType: TextInputType.phone,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty)
+                            return 'Wajib diisi';
+                          if (!RegExp(r'^[0-9]+$').hasMatch(val)) {
+                            return 'Hanya angka yang diperbolehkan';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+
+                    // Address Field
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1800),
+                      child: _buildTextField(
+                        controller: addressController,
+                        label: 'Alamat',
+                        icon: Icons.home_outlined,
+                        maxLines: 2,
+                        validator:
+                            (val) =>
+                                val == null || val.trim().isEmpty
+                                    ? 'Wajib diisi'
+                                    : null,
+                      ),
+                    ),
+
+                    // Location Picker
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 1900),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: _selectLocationFromMap,
+                            icon: const Icon(Icons.map_outlined),
+                            label: Text(
+                              selectedLocation == null
+                                  ? 'Pilih Lokasi di Peta'
+                                  : 'Ubah Lokasi',
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Informasi Pribadi',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-
-                // Name Field
-                FadeInDown(
-                  delay: const Duration(milliseconds: 100),
-                  duration: const Duration(milliseconds: 500),
-                  child: _buildTextField(
-                    controller: nameController,
-                    label: 'Nama Lengkap',
-                    icon: Icons.person_outline,
-                    validator: (val) =>
-                        val == null || val.trim().isEmpty ? 'Wajib diisi' : null,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Email Field
-                FadeInDown(
-                  delay: const Duration(milliseconds: 200),
-                  duration: const Duration(milliseconds: 500),
-                  child: _buildTextField(
-                    controller: emailController,
-                    label: 'Email',
-                    icon: Icons.email_outlined,
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (val) {
-                      if (val == null || val.trim().isEmpty) return 'Wajib diisi';
-                      if (!RegExp(
-                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                      ).hasMatch(val)) {
-                        return 'Email tidak valid';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Password Field
-                FadeInDown(
-                  delay: const Duration(milliseconds: 300),
-                  duration: const Duration(milliseconds: 500),
-                  child: _buildTextField(
-                    controller: passwordController,
-                    label: 'Password',
-                    icon: Icons.lock_outline,
-                    obscureText: _obscurePassword,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                    validator: (val) {
-                      if (val == null || val.trim().isEmpty) return 'Wajib diisi';
-                      if (val.length < 6) return 'Minimal 6 karakter';
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Phone Field
-                FadeInDown(
-                  delay: const Duration(milliseconds: 400),
-                  duration: const Duration(milliseconds: 500),
-                  child: _buildTextField(
-                    controller: phoneController,
-                    label: 'Nomor HP',
-                    icon: Icons.phone_outlined,
-                    keyboardType: TextInputType.phone,
-                    validator: (val) {
-                      if (val == null || val.trim().isEmpty) return 'Wajib diisi';
-                      if (!RegExp(r'^[0-9]+$').hasMatch(val)) {
-                        return 'Hanya angka yang diperbolehkan';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Address Field
-                FadeInDown(
-                  delay: const Duration(milliseconds: 500),
-                  duration: const Duration(milliseconds: 500),
-                  child: _buildTextField(
-                    controller: addressController,
-                    label: 'Alamat',
-                    icon: Icons.home_outlined,
-                    maxLines: 2,
-                    validator: (val) =>
-                        val == null || val.trim().isEmpty ? 'Wajib diisi' : null,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Location Picker
-                FadeInDown(
-                  delay: const Duration(milliseconds: 600),
-                  duration: const Duration(milliseconds: 500),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: _selectLocationFromMap,
-                        icon: const Icon(Icons.map_outlined),
-                        label: Text(
-                          selectedLocation == null
-                              ? 'Pilih Lokasi di Peta'
-                              : 'Ubah Lokasi',
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                      if (selectedLocation != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            'Lokasi dipilih: (${selectedLocation!.latitude.toStringAsFixed(4)}, ${selectedLocation!.longitude.toStringAsFixed(4)})',
-                            style: TextStyle(
-                              color: theme.colorScheme.primary,
-                              fontSize: 12,
+                          if (selectedLocation != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                'Lokasi dipilih: (${selectedLocation!.latitude.toStringAsFixed(4)}, ${selectedLocation!.longitude.toStringAsFixed(4)})',
+                                style: TextStyle(
+                                  color: theme.colorScheme.primary,
+                                  fontSize: 12,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                const Text(
-                  'Informasi Alumni',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-
-                // Job Field
-                FadeInDown(
-                  delay: const Duration(milliseconds: 700),
-                  duration: const Duration(milliseconds: 500),
-                  child: _buildTextField(
-                    controller: jobController,
-                    label: 'Pekerjaan',
-                    icon: Icons.work_outline,
-                    validator: (val) =>
-                        val == null || val.trim().isEmpty ? 'Wajib diisi' : null,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Graduation Year Field
-                FadeInDown(
-                  delay: const Duration(milliseconds: 800),
-                  duration: const Duration(milliseconds: 500),
-                  child: _buildTextField(
-                    controller: graduationYearController,
-                    label: 'Tahun Lulus',
-                    icon: Icons.school_outlined,
-                    keyboardType: TextInputType.number,
-                    validator: (val) {
-                      if (val == null || val.trim().isEmpty) return 'Wajib diisi';
-                      if (!RegExp(r'^\d{4}$').hasMatch(val)) {
-                        return 'Format tahun tidak valid (contoh: 2023)';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(height: 32),
-
-                // Register Button
-                FadeInDown(
-                  delay: const Duration(milliseconds: 900),
-                  duration: const Duration(milliseconds: 500),
-                  child: ElevatedButton(
-                    onPressed: isLoading ? null : _register,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        ],
                       ),
                     ),
-                    child: isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text(
-                            'Daftar Sekarang',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                    const SizedBox(height: 20),
 
-                // Login Redirect
-                FadeInDown(
-                  delay: const Duration(milliseconds: 1000),
-                  duration: const Duration(milliseconds: 500),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Sudah punya akun?',
-                        style: TextStyle(color: Colors.grey.shade600),
+                    // Job Field
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 2000),
+                      child: _buildTextField(
+                        controller: jobController,
+                        label: 'Pekerjaan',
+                        icon: Icons.work_outlined,
+                        validator:
+                            (val) =>
+                                val == null || val.trim().isEmpty
+                                    ? 'Wajib diisi'
+                                    : null,
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()),
-                          );
+                    ),
+
+                    // Graduation Year Field
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 2100),
+                      child: _buildTextField(
+                        controller: graduationYearController,
+                        label: 'Tahun Lulus',
+                        icon: Icons.school_outlined,
+                        keyboardType: TextInputType.number,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty)
+                            return 'Wajib diisi';
+                          if (!RegExp(r'^\d{4}$').hasMatch(val)) {
+                            return 'Format tahun tidak valid (contoh: 2023)';
+                          }
+                          return null;
                         },
-                        child: const Text('Masuk disini'),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Error Message
-                if (message != null)
-                  FadeInDown(
-                    delay: const Duration(milliseconds: 1100),
-                    duration: const Duration(milliseconds: 500),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 16),
-                      child: Text(
-                        message!,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: theme.colorScheme.error),
                       ),
                     ),
-                  ),
-              ],
+
+                    // Error Icon and Message
+                    if (showErrorIcon)
+                      FadeInDown(
+                        duration: const Duration(milliseconds: 600),
+                        child: const Icon(
+                          Icons.error_outline,
+                          color: Colors.redAccent,
+                          size: 40,
+                        ),
+                      ),
+                    if (message != null && showErrorAnimation)
+                      ShakeX(
+                        duration: const Duration(milliseconds: 700),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            message!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ),
+
+                    // Register Button
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 2200),
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 20),
+                        padding: const EdgeInsets.only(top: 3, left: 3),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          border: Border.all(color: Colors.black),
+                        ),
+                        child: MaterialButton(
+                          minWidth: double.infinity,
+                          height: 60,
+                          onPressed: isLoading ? null : _register,
+                          color: Colors.greenAccent,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Text(
+                            isLoading ? "Memproses..." : "Daftar Sekarang",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Login Redirect
+                    FadeInUp(
+                      duration: const Duration(milliseconds: 2300),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text("Sudah punya akun? "),
+                          GestureDetector(
+                            onTap: () {
+                              Get.offAll(() => const LoginPage());
+                            },
+                            child: const Text(
+                              "Masuk disini",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -474,22 +590,40 @@ class _RegisterPageState extends State<RegisterPage> {
     Widget? suffixIcon,
     int maxLines = 1,
   }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      validator: validator,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        suffixIcon: suffixIcon,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 16,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+            color: Colors.black87,
+          ),
         ),
-      ),
+        const SizedBox(height: 5),
+        TextField(
+          controller: controller,
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon),
+            suffixIcon: suffixIcon,
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 0,
+              horizontal: 10,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+          ),
+        ),
+        const SizedBox(height: 30),
+      ],
     );
   }
 }
