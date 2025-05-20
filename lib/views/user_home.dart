@@ -300,10 +300,10 @@ class _HomePageState extends State<HomePage> {
                       //   onTap: () => Get.toNamed('/activities'),
                       // ),
                       _buildFeatureTile(
-                        icon: Icons.work_outline,
-                        title: "Lowongan Pekerjaan",
+                        icon: Icons.chat_bubble_outline,
+                        title: "Grup Chat",
                         color: const Color(0xFFF59E0B),
-                        onTap: () => Get.toNamed('/job'),
+                        onTap: () => Get.toNamed('/group-chat'),
                       ),
                     ],
                   ),
@@ -591,7 +591,7 @@ class _HomePageState extends State<HomePage> {
             if (index == 0)
               Get.offAllNamed('/user-dashboard');
             else if (index == 1)
-              Get.toNamed('/group-chat');
+              Get.toNamed('/job');
             else if (index == 2)
               Get.offAllNamed('/activities');
             else if (index == 3)
@@ -633,11 +633,11 @@ class _HomePageState extends State<HomePage> {
                           : Colors.transparent,
                 ),
                 child: Icon(
-                  _currentIndex == 1 ? Icons.event : Icons.chat_bubble_outlined,
+                  _currentIndex == 1 ? Icons.event : Icons.work_outline,
                   size: 24,
                 ),
               ),
-              label: 'Group',
+              label: 'Job',
             ),
             BottomNavigationBarItem(
               icon: Container(

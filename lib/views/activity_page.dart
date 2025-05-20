@@ -497,8 +497,10 @@ class _ActivityPageState extends State<ActivityPage> {
             if (index == 0)
               Get.offAllNamed('/user-dashboard');
             else if (index == 1)
-              Get.offAllNamed('/activities');
+              Get.toNamed('/group-chat');
             else if (index == 2)
+              Get.offAllNamed('/activities');
+            else if (index == 3)
               Get.offAllNamed('/profile');
           },
           type: BottomNavigationBarType.fixed,
@@ -537,7 +539,24 @@ class _ActivityPageState extends State<ActivityPage> {
                           : Colors.transparent,
                 ),
                 child: Icon(
-                  _currentIndex == 1 ? Icons.event : Icons.event_outlined,
+                  _currentIndex == 1 ? Icons.event : Icons.chat_bubble_outlined,
+                  size: 24,
+                ),
+              ),
+              label: 'Group',
+            ),
+            BottomNavigationBarItem(
+              icon: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      _currentIndex == 2
+                          ? const Color(0xFF0F4C81).withOpacity(0.1)
+                          : Colors.transparent,
+                ),
+                child: Icon(
+                  _currentIndex == 2 ? Icons.event : Icons.event_outlined,
                   size: 24,
                 ),
               ),

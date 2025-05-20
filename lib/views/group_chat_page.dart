@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:animate_do/animate_do.dart';
+import 'dart:async';
 
 class GroupChatPage extends StatefulWidget {
   @override
@@ -13,6 +14,8 @@ class _GroupChatPageState extends State<GroupChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final user = FirebaseAuth.instance.currentUser;
   final ScrollController _scrollController = ScrollController();
+
+  late StreamSubscription _typingStatusSub;
 
   bool _isTyping = false;
   bool _someoneTyping = false;
@@ -25,24 +28,25 @@ class _GroupChatPageState extends State<GroupChatPage> {
   }
 
   void _listenTypingStatus() {
-    FirebaseFirestore.instance.collection('typingStatus').snapshots().listen((
-      snapshot,
-    ) {
-      final docs = snapshot.docs;
-      for (var doc in docs) {
-        if (doc.id != user?.uid && doc['isTyping'] == true) {
+    _typingStatusSub = FirebaseFirestore.instance
+        .collection('typingStatus')
+        .snapshots()
+        .listen((snapshot) {
+          final docs = snapshot.docs;
+          for (var doc in docs) {
+            if (doc.id != user?.uid && doc['isTyping'] == true) {
+              setState(() {
+                _someoneTyping = true;
+                _typingUserName = doc['name'] ?? 'Alumni';
+              });
+              return;
+            }
+          }
           setState(() {
-            _someoneTyping = true;
-            _typingUserName = doc['name'] ?? 'Alumni';
+            _someoneTyping = false;
+            _typingUserName = '';
           });
-          return;
-        }
-      }
-      setState(() {
-        _someoneTyping = false;
-        _typingUserName = '';
-      });
-    });
+        });
   }
 
   void _updateTypingStatus(bool isTyping) async {
@@ -372,6 +376,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
     _messageController.dispose();
     _scrollController.dispose();
     _updateTypingStatus(false);
+    _typingStatusSub.cancel(); // <-- Tambahkan ini
     super.dispose();
   }
 }
