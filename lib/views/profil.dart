@@ -12,7 +12,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  int _currentIndex = 2;
+  int _currentIndex = 3;
   Map<String, dynamic>? userData;
   bool isLoading = true;
 
@@ -306,7 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (index == 0)
               Get.offAllNamed('/user-dashboard');
             else if (index == 1)
-              Get.toNamed('/group-chat');
+              Get.toNamed('/job');
             else if (index == 2)
               Get.offAllNamed('/activities');
             else if (index == 3)
@@ -348,11 +348,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           : Colors.transparent,
                 ),
                 child: Icon(
-                  _currentIndex == 1 ? Icons.event : Icons.chat_bubble_outlined,
+                  _currentIndex == 1 ? Icons.event : Icons.work_outline,
                   size: 24,
                 ),
               ),
-              label: 'Group',
+              label: 'Job',
             ),
             BottomNavigationBarItem(
               icon: Container(

@@ -14,6 +14,7 @@ class _JobPageState extends State<JobPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedFilter = 'All';
+  int _currentIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -299,6 +300,7 @@ class _JobPageState extends State<JobPage> {
         backgroundColor: Colors.blue,
         child: const Icon(Icons.add, color: Colors.white),
       ),
+      bottomNavigationBar: _buildNavbar(),
     );
   }
 
@@ -581,6 +583,115 @@ class _JobPageState extends State<JobPage> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildNavbar() {
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 16,
+            spreadRadius: 0,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() => _currentIndex = index);
+            if (index == 0)
+              Get.offAllNamed('/user-dashboard');
+            else if (index == 1)
+              Get.toNamed('/job');
+            else if (index == 2)
+              Get.offAllNamed('/activities');
+            else if (index == 3)
+              Get.offAllNamed('/profile');
+          },
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFF0F4C81),
+          unselectedItemColor: Colors.grey[600],
+          selectedLabelStyle: const TextStyle(fontSize: 12),
+          showUnselectedLabels: true,
+          elevation: 0,
+          items: [
+            BottomNavigationBarItem(
+              icon: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      _currentIndex == 0
+                          ? const Color(0xFF0F4C81).withOpacity(0.1)
+                          : Colors.transparent,
+                ),
+                child: Icon(
+                  _currentIndex == 0 ? Icons.home : Icons.home_outlined,
+                  size: 24,
+                ),
+              ),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      _currentIndex == 1
+                          ? const Color(0xFF0F4C81).withOpacity(0.1)
+                          : Colors.transparent,
+                ),
+                child: Icon(
+                  _currentIndex == 1 ? Icons.event : Icons.work_outline,
+                  size: 24,
+                ),
+              ),
+              label: 'Job',
+            ),
+            BottomNavigationBarItem(
+              icon: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      _currentIndex == 2
+                          ? const Color(0xFF0F4C81).withOpacity(0.1)
+                          : Colors.transparent,
+                ),
+                child: Icon(
+                  _currentIndex == 2 ? Icons.event : Icons.event_outlined,
+                  size: 24,
+                ),
+              ),
+              label: 'Kegiatan',
+            ),
+            BottomNavigationBarItem(
+              icon: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      _currentIndex == 3
+                          ? const Color(0xFF0F4C81).withOpacity(0.1)
+                          : Colors.transparent,
+                ),
+                child: Icon(
+                  _currentIndex == 3 ? Icons.person : Icons.person_outlined,
+                  size: 24,
+                ),
+              ),
+              label: 'Profil',
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -12,7 +12,7 @@ class ActivityPage extends StatefulWidget {
 }
 
 class _ActivityPageState extends State<ActivityPage> {
-  int _currentIndex = 1;
+  int _currentIndex = 2;
   late Future<List<Activity>> activitiesFuture;
   final DateFormat dateFormat = DateFormat('dd MMM yyyy');
   final DateFormat timeFormat = DateFormat('HH:mm');
@@ -497,7 +497,7 @@ class _ActivityPageState extends State<ActivityPage> {
             if (index == 0)
               Get.offAllNamed('/user-dashboard');
             else if (index == 1)
-              Get.toNamed('/group-chat');
+              Get.toNamed('/job');
             else if (index == 2)
               Get.offAllNamed('/activities');
             else if (index == 3)
@@ -539,11 +539,11 @@ class _ActivityPageState extends State<ActivityPage> {
                           : Colors.transparent,
                 ),
                 child: Icon(
-                  _currentIndex == 1 ? Icons.event : Icons.chat_bubble_outlined,
+                  _currentIndex == 1 ? Icons.event : Icons.work_outline,
                   size: 24,
                 ),
               ),
-              label: 'Group',
+              label: 'Job',
             ),
             BottomNavigationBarItem(
               icon: Container(
