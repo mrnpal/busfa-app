@@ -238,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                                 future: _getJobCount(),
                                 builder: (context, snapshot) {
                                   return _buildStatCard(
-                                    title: "New Jobs",
+                                    title: "Lowongan Kerja",
                                     value:
                                         snapshot.hasData
                                             ? "${snapshot.data}"
@@ -591,7 +591,7 @@ class _HomePageState extends State<HomePage> {
             if (index == 0)
               Get.offAllNamed('/user-dashboard');
             else if (index == 1)
-              Get.toNamed('/job');
+              Get.offAllNamed('/job');
             else if (index == 2)
               Get.offAllNamed('/activities');
             else if (index == 3)

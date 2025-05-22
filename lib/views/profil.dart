@@ -306,7 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (index == 0)
               Get.offAllNamed('/user-dashboard');
             else if (index == 1)
-              Get.toNamed('/job');
+              Get.offAllNamed('/job');
             else if (index == 2)
               Get.offAllNamed('/activities');
             else if (index == 3)

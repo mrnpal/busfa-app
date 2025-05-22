@@ -607,7 +607,7 @@ class _JobPageState extends State<JobPage> {
             if (index == 0)
               Get.offAllNamed('/user-dashboard');
             else if (index == 1)
-              Get.toNamed('/job');
+              Get.offAllNamed('/job');
             else if (index == 2)
               Get.offAllNamed('/activities');
             else if (index == 3)
@@ -649,7 +649,7 @@ class _JobPageState extends State<JobPage> {
                           : Colors.transparent,
                 ),
                 child: Icon(
-                  _currentIndex == 1 ? Icons.event : Icons.work_outline,
+                  _currentIndex == 1 ? Icons.work : Icons.work_outline,
                   size: 24,
                 ),
               ),
