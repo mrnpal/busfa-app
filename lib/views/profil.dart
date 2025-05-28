@@ -90,6 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final graduationYear = userData?['graduationYear'] ?? 'Not specified';
     final currentJob = userData?['job'] ?? 'Not specified';
     final phoneNumber = userData?['phone'] ?? 'Not provided';
+    final address = userData?['address'] ?? 'Not provided';
 
     // Ambil url foto dari Firestore, fallback ke asset jika null/kosong
     final photoUrl =
@@ -153,22 +154,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             )
                                             as ImageProvider,
                               ),
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
+                              GestureDetector(
+                                onTap: () {
+                                  Get.toNamed('/edit-profile');
+                                },
                                 child: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue,
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(
-                                    Icons.edit,
-                                    size: 16,
-                                    color: Colors.white,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.edit,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -232,6 +238,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 icon: Icons.phone,
                                 title: "Nomor Telepon",
                                 value: phoneNumber,
+                              ),
+                              const Divider(height: 24),
+                              _buildInfoItem(
+                                icon: Icons.location_on,
+                                title: "Alamat",
+                                value: address,
                               ),
                             ],
                           ),

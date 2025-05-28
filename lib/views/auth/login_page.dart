@@ -65,14 +65,6 @@ class _LoginPageState extends State<LoginPage> {
               ],
             ),
       );
-
-      // Reset animasi agar bisa dipicu ulang
-      Future.delayed(Duration(seconds: 2), () {
-        setState(() {
-          showErrorAnimation = false;
-          showErrorIcon = false;
-        });
-      });
     } else {
       Get.offAllNamed('/user-dashboard');
     }
@@ -135,26 +127,6 @@ class _LoginPageState extends State<LoginPage> {
                       controller: passwordController,
                     ),
                   ),
-                  if (showErrorIcon)
-                    FadeInDown(
-                      duration: Duration(milliseconds: 600),
-                      child: Icon(
-                        Icons.error_outline,
-                        color: Colors.redAccent,
-                        size: 40,
-                      ),
-                    ),
-                  if (message != null && showErrorAnimation)
-                    ShakeX(
-                      duration: Duration(milliseconds: 700),
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 10),
-                        child: Text(
-                          message!,
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    ),
 
                   FadeInUp(
                     duration: Duration(milliseconds: 1400),

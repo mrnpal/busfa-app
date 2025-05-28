@@ -2,8 +2,10 @@ import 'package:alumni_busfa/maps/alumni_map_page.dart';
 import 'package:alumni_busfa/views/activity_detail_page.dart';
 import 'package:alumni_busfa/views/activity_page.dart';
 import 'package:alumni_busfa/views/add_job_page.dart';
+import 'package:alumni_busfa/views/auth/forget_password.dart';
 import 'package:alumni_busfa/views/auth/login_page.dart';
 import 'package:alumni_busfa/views/auth/sign_up.dart';
+import 'package:alumni_busfa/views/edit_page.dart';
 import 'package:alumni_busfa/views/group_chat_page.dart';
 import 'package:alumni_busfa/views/job_page.dart';
 import 'package:alumni_busfa/views/profil.dart';
@@ -49,6 +51,8 @@ class _MyAppState extends State<MyApp> {
         GetPage(name: '/add-job', page: () => AddJobPage()),
         GetPage(name: '/activity-detail', page: () => ActivityDetailPage()),
         GetPage(name: '/group-chat', page: () => GroupChatPage()),
+        GetPage(name: '/forget-pw', page: () => ForgetPasswordPage()),
+        GetPage(name: '/edit-profile', page: () => EditProfilePage()),
       ],
     );
   }
