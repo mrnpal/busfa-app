@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
         GetPage(name: '/add-job', page: () => AddJobPage()),
         GetPage(name: '/activity-detail', page: () => ActivityDetailPage()),
         GetPage(name: '/group-chat', page: () => GroupChatPage()),
-        GetPage(name: '/forget-pw', page: () => ForgetPasswordPage()),
+        GetPage(name: '/forgot-pw', page: () => ForgetPasswordPage()),
         GetPage(name: '/edit-profile', page: () => EditProfilePage()),
       ],
     );

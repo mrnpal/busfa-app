@@ -127,9 +127,26 @@ class _LoginPageState extends State<LoginPage> {
                       controller: passwordController,
                     ),
                   ),
-
                   FadeInUp(
                     duration: Duration(milliseconds: 1400),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            Get.toNamed('/forgot-pw');
+                          },
+                          child: Text(
+                            "Lupa Password?",
+                            style: TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  FadeInUp(
+                    duration: Duration(milliseconds: 1500),
                     child: Container(
                       margin: EdgeInsets.only(top: 20),
                       padding: EdgeInsets.only(top: 3, left: 3),
@@ -156,34 +173,12 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  FadeInUp(
-                    duration: Duration(milliseconds: 1500),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Text("Belum punya akun? "),
-                        GestureDetector(
-                          onTap: () {
-                            Get.toNamed('/register');
-                          },
-                          child: Text(
-                            "Sign up",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
                 ],
               ),
             ),
           ),
           FadeInUp(
-            duration: Duration(milliseconds: 1600),
+            duration: Duration(milliseconds: 1700),
             child: Container(
               height: MediaQuery.of(context).size.height / 3,
               decoration: BoxDecoration(

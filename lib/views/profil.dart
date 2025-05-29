@@ -34,10 +34,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (snapshot.exists) {
         setState(() {
           userData = snapshot.data();
-          isLoading = false;
         });
       }
     }
+    // Pindahkan isLoading=false ke sini agar CircularProgressIndicator hilang
+    // meskipun data user tidak ada di Firestore (user masih login via Auth)
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> _logout() async {
@@ -48,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       Get.snackbar(
         "Error",
-        "Failed to logout!",
+        "Gagal untuk keluar: ${e.toString()}", // Pesan error lebih detail
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -69,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.blue, // Warna tema utama
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -85,33 +89,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    // Ambil nama dari Firestore, fallback ke email jika tidak ada
     final userName = userData?['name'] ?? user?.email?.split('@')[0] ?? "User";
-    final graduationYear = userData?['graduationYear'] ?? 'Not specified';
-    final currentJob = userData?['job'] ?? 'Not specified';
-    final phoneNumber = userData?['phone'] ?? 'Not provided';
-    final address = userData?['address'] ?? 'Not provided';
+    final graduationYear = userData?['graduationYear'] ?? 'Belum ditentukan';
+    final currentJob = userData?['job'] ?? 'Belum ditentukan';
+    final phoneNumber = userData?['phone'] ?? 'Belum diberikan';
+    final address = userData?['address'] ?? 'Belum diberikan';
 
-    // Ambil url foto dari Firestore, fallback ke asset jika null/kosong
     final photoUrl =
         userData?['profilePictureUrl'] ??
         userData?['photoUrl'] ??
-        userData?['profile-images'];
+        userData?['profile-images']; // Pastikan key ini benar
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text(
-          'Profile',
+          'Profil',
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
         centerTitle: true,
         elevation: 0,
+        backgroundColor: Colors.white, // Samakan dengan header profil
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: "Logout",
+            icon: const Icon(Icons.logout, color: Colors.blue), // Warna ikon
+            tooltip: "Keluar",
             onPressed: _showLogoutConfirmation,
           ),
         ],
@@ -146,8 +149,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: [
                               CircleAvatar(
                                 radius: 50,
+                                backgroundColor:
+                                    Colors.grey[200], // Fallback background
                                 backgroundImage:
-                                    (photoUrl != null && photoUrl != "")
+                                    (photoUrl != null &&
+                                            photoUrl
+                                                .isNotEmpty) // Cek isNotEmpty
                                         ? NetworkImage(photoUrl)
                                         : const AssetImage(
                                               'assets/images/profile-icon.png',
@@ -163,11 +170,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
                                     shape: BoxShape.circle,
+                                    boxShadow: [
+                                      // Tambah shadow kecil
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 4,
+                                        offset: Offset(1, 1),
+                                      ),
+                                    ],
                                   ),
                                   child: Container(
                                     padding: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      color: Colors.blue,
+                                      color: Colors.blue, // Warna tema utama
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(
@@ -190,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            user?.email ?? 'No email',
+                            user?.email ?? 'Tidak ada email',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[600],
@@ -205,7 +220,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Card(
-                        elevation: 0,
+                        elevation: 0, // Atau sedikit shadow jika diinginkan
+                        color: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -223,25 +239,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               const SizedBox(height: 16),
                               _buildInfoItem(
-                                icon: Icons.school,
+                                icon: Icons.school_outlined, // Icon outline
                                 title: "Tahun Lulus",
                                 value: graduationYear,
                               ),
                               const Divider(height: 24),
                               _buildInfoItem(
-                                icon: Icons.work,
+                                icon: Icons.work_outline, // Icon outline
                                 title: "Pekerjaan",
                                 value: currentJob,
                               ),
                               const Divider(height: 24),
                               _buildInfoItem(
-                                icon: Icons.phone,
+                                icon: Icons.phone_outlined, // Icon outline
                                 title: "Nomor Telepon",
                                 value: phoneNumber,
                               ),
                               const Divider(height: 24),
                               _buildInfoItem(
-                                icon: Icons.location_on,
+                                icon:
+                                    Icons.location_on_outlined, // Icon outline
                                 title: "Alamat",
                                 value: address,
                               ),
@@ -250,7 +267,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 150),
+                    const SizedBox(height: 16), // Spasi sebelum tombol
                   ],
                 ),
               ),
@@ -268,10 +285,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.1),
+            color: Colors.blue.withOpacity(0.1), // Warna tema utama
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, size: 20, color: Colors.blue),
+          child: Icon(icon, size: 20, color: Colors.blue), // Warna tema utama
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -289,6 +306,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
+                overflow:
+                    TextOverflow
+                        .ellipsis, // Menghindari overflow jika teks panjang
+                maxLines: 2,
               ),
             ],
           ),
@@ -298,6 +319,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildNavbar() {
+    // Kode Navbar Anda tidak berubah, jadi saya akan mempersingkatnya di sini
+    // Pastikan untuk menyalin kembali implementasi _buildNavbar Anda yang lengkap
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -314,95 +337,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) {
-            setState(() => _currentIndex = index);
-            if (index == 0)
-              Get.offAllNamed('/user-dashboard');
-            else if (index == 1)
-              Get.offAllNamed('/job');
-            else if (index == 2)
-              Get.offAllNamed('/activities');
-            else if (index == 3)
-              Get.offAllNamed('/profile');
+            // Optimasi: Hanya setState jika index berbeda
+            if (_currentIndex != index) {
+              setState(() => _currentIndex = index);
+              if (index == 0) {
+                Get.offAllNamed('/user-dashboard');
+              } else if (index == 1) {
+                Get.offAllNamed('/job');
+              } else if (index == 2) {
+                Get.offAllNamed('/activities');
+              } else if (index == 3) {
+                // Jika sudah di halaman profil, tidak perlu navigasi ulang
+                // Get.offAllNamed('/profile');
+              }
+            }
           },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
           selectedItemColor: const Color(0xFF0F4C81),
           unselectedItemColor: Colors.grey[600],
-          selectedLabelStyle: const TextStyle(fontSize: 12),
+          selectedLabelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ), // Sedikit bold
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 12,
+          ), // Pastikan ukuran sama
           showUnselectedLabels: true,
-          elevation: 0,
+          elevation: 0, // Shadow sudah dihandle oleh Container
           items: [
-            BottomNavigationBarItem(
-              icon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                      _currentIndex == 0
-                          ? const Color(0xFF0F4C81).withOpacity(0.1)
-                          : Colors.transparent,
-                ),
-                child: Icon(
-                  _currentIndex == 0 ? Icons.home : Icons.home_outlined,
-                  size: 24,
-                ),
-              ),
+            _buildNavbarItem(
+              iconData: Icons.home_outlined,
+              activeIconData: Icons.home,
               label: 'Home',
+              index: 0,
             ),
-            BottomNavigationBarItem(
-              icon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                      _currentIndex == 1
-                          ? const Color(0xFF0F4C81).withOpacity(0.1)
-                          : Colors.transparent,
-                ),
-                child: Icon(
-                  _currentIndex == 1 ? Icons.event : Icons.work_outline,
-                  size: 24,
-                ),
-              ),
+            _buildNavbarItem(
+              iconData: Icons.work_outline,
+              activeIconData: Icons.work,
               label: 'Job',
-            ),
-            BottomNavigationBarItem(
-              icon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                      _currentIndex == 2
-                          ? const Color(0xFF0F4C81).withOpacity(0.1)
-                          : Colors.transparent,
-                ),
-                child: Icon(
-                  _currentIndex == 2 ? Icons.event : Icons.event_outlined,
-                  size: 24,
-                ),
-              ),
+              index: 1,
+            ), // Menggunakan ikon work
+            _buildNavbarItem(
+              iconData: Icons.event_outlined,
+              activeIconData: Icons.event,
               label: 'Kegiatan',
+              index: 2,
             ),
-            BottomNavigationBarItem(
-              icon: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                      _currentIndex == 3
-                          ? const Color(0xFF0F4C81).withOpacity(0.1)
-                          : Colors.transparent,
-                ),
-                child: Icon(
-                  _currentIndex == 3 ? Icons.person : Icons.person_outlined,
-                  size: 24,
-                ),
-              ),
+            _buildNavbarItem(
+              iconData: Icons.person_outlined,
+              activeIconData: Icons.person,
               label: 'Profil',
+              index: 3,
             ),
           ],
         ),
       ),
+    );
+  }
+
+  // Helper widget untuk BottomNavigationBarItem agar lebih rapi
+  BottomNavigationBarItem _buildNavbarItem({
+    required IconData iconData,
+    required IconData activeIconData,
+    required String label,
+    required int index,
+  }) {
+    bool isActive = _currentIndex == index;
+    return BottomNavigationBarItem(
+      icon: Container(
+        padding: const EdgeInsets.all(6), // Padding konsisten
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color:
+              isActive
+                  ? const Color(0xFF0F4C81).withOpacity(0.1)
+                  : Colors.transparent,
+        ),
+        child: Icon(
+          isActive ? activeIconData : iconData,
+          size: 24,
+          // color: isActive ? const Color(0xFF0F4C81) : Colors.grey[600], // Warna diatur oleh BottomNavigationBar
+        ),
+      ),
+      label: label,
     );
   }
 }
