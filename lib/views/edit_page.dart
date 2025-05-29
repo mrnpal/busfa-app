@@ -125,13 +125,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profil'),
+        title: const Text(
+          'Edit Profil',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+        ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Theme.of(context).primaryColor,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded),
+          color: Colors.black,
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -195,7 +199,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
+                                color: Colors.blue,
                                 shape: BoxShape.circle,
                                 border: Border.all(
                                   color: Colors.white,
@@ -289,7 +293,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _saveProfile,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Colors.blue, // <-- Ubah ke warna biru
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -336,7 +340,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: Colors.grey.shade600),
-        floatingLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
+
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),

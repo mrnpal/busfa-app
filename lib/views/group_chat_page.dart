@@ -140,23 +140,22 @@ class _GroupChatPageState extends State<GroupChatPage> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF6E56D8), Color(0xFF4D3DB1)],
+              colors: [Color(0xFF0F4C81), Color(0xFF3A7BD5)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
-        actions: [IconButton(icon: Icon(Icons.more_vert), onPressed: () {})],
       ),
       body: Column(
         children: [
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/chat_bg.png'),
-                  fit: BoxFit.cover,
-                ),
+                // image: DecorationImage(
+                //   // image: AssetImage('assets/images/background.png'),
+                //   fit: BoxFit.cover,
+                // ),
               ),
               child: StreamBuilder<QuerySnapshot>(
                 stream:
@@ -234,9 +233,9 @@ class _GroupChatPageState extends State<GroupChatPage> {
                                             context: context,
                                             builder:
                                                 (context) => AlertDialog(
-                                                  title: Text('Delete Message'),
+                                                  title: Text('Hapus Pesan'),
                                                   content: Text(
-                                                    'Are you sure you want to delete this message?',
+                                                    'Apakah kamu yakin ingin menghapus pesan ini?',
                                                   ),
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
@@ -251,7 +250,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                                                             context,
                                                             false,
                                                           ),
-                                                      child: Text('Cancel'),
+                                                      child: Text('Batal'),
                                                     ),
                                                     TextButton(
                                                       onPressed:
@@ -260,7 +259,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                                                             true,
                                                           ),
                                                       child: Text(
-                                                        'Delete',
+                                                        'Hapus',
                                                         style: TextStyle(
                                                           color: Colors.red,
                                                         ),
@@ -476,7 +475,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                     child: TextField(
                       controller: _messageController,
                       decoration: InputDecoration(
-                        hintText: 'Type a message...',
+                        hintText: 'Tulis pesan...',
                         border: InputBorder.none,
                         hintStyle: TextStyle(color: Colors.grey.shade500),
                       ),
@@ -498,12 +497,6 @@ class _GroupChatPageState extends State<GroupChatPage> {
                 ),
                 SizedBox(width: 8),
                 Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF6E56D8), Color(0xFF4D3DB1)],
-                    ),
-                  ),
                   child: Material(
                     color: Colors.transparent,
                     shape: CircleBorder(),
@@ -514,7 +507,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
                         padding: EdgeInsets.all(12),
                         child: Icon(
                           Icons.send_rounded,
-                          color: Colors.white,
+                          color: Color(0xFF0F4C81),
                           size: 24,
                         ),
                       ),

@@ -24,12 +24,12 @@ class _JobPageState extends State<JobPage> {
         title: const Text(
           'Lowongan Pekerjaan',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             fontSize: 20,
             color: Colors.black87,
           ),
         ),
-        centerTitle: false,
+        centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black87),

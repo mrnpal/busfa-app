@@ -61,12 +61,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text(
-          "Confirm Logout",
+          "Konfirmasi Keluar",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        content: const Text("Are you sure you want to logout?"),
+        content: const Text("Apakah Anda yakin ingin keluar?"),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text("Cancel")),
+          TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
@@ -75,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             onPressed: _logout,
-            child: const Text("Logout", style: TextStyle(color: Colors.white)),
+            child: const Text("Keluar", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -104,9 +104,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         automaticallyImplyLeading: false,
         title: const Text(
           'Profile',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
-        centerTitle: false,
+        centerTitle: true,
         elevation: 0,
         actions: [
           IconButton(
