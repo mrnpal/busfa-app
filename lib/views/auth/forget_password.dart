@@ -139,7 +139,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _resetPassword,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.greenAccent.shade200,
+                      backgroundColor: Colors.greenAccent,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -161,7 +161,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.blueGrey,
+                                color: Colors.black87,
                               ),
                             ),
                   ),

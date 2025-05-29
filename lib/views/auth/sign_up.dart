@@ -268,9 +268,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: theme.colorScheme.primary.withOpacity(
-                                    0.5,
-                                  ),
+                                  color: Colors.white,
                                   width: 2,
                                 ),
                               ),
@@ -299,7 +297,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 child: Container(
                                   padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.primary,
+                                    color: Colors.blueAccent,
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color:
@@ -415,7 +413,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         controller: addressController,
                         label: 'Alamat',
                         icon: Icons.home_outlined,
-                        maxLines: 2,
+                        maxLines: 1,
                         validator:
                             (val) =>
                                 val == null || val.trim().isEmpty
